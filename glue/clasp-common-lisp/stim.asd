@@ -3,7 +3,7 @@
   :author "Selwyn Simsek"
   :mailto "selwyn.simsek@cantab.net"
   :license ""
-  :depends-on ()
+  :depends-on ("cffi")
   :components ((:module "src"
                 :components
                 ((:file "main"))))
