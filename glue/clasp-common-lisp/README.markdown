@@ -1,0 +1,13 @@
+# Stim
+
+## Usage
+
+## Installation
+
+## Author
+
+* Selwyn Simsek (selwyn.simsek@cantab.net)
+
+## Copyright
+
+Copyright (c) 2025 Selwyn Simsek (selwyn.simsek@cantab.net)
