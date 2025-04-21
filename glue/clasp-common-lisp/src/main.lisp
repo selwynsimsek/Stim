@@ -5,7 +5,7 @@
 #-clasp (error "This is a clasp-only library!")
 
 (eval-when (:load-toplevel)
-  (let ((build-directory (truename (asdf:system-relative-pathname :stim #p"../../build")))
+  (let ((build-directory (truename (asdf:system-relative-pathname :stim #p"../../build/out")))
         (glue-directory (asdf:system-relative-pathname :stim #p"./src/")))
     (uiop:run-program (format nil "cd ~a && make clean && make" glue-directory)
                       :force-shell t :output *error-output*

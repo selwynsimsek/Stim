@@ -31,6 +31,7 @@ venv
 .venv
 **/LastTest.log
 *.so
+*.o
 .clwb/*
 .cmake/*
 coverage/*
