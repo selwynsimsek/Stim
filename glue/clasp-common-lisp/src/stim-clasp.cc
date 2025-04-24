@@ -8,6 +8,15 @@ namespace clasp_stim {
 
   void hello_world(double x, double y) { fmt::print("Hello World! Did you know that {} + {} = {}?\n", x, y, x + y); }
 
+  int stim_main(const std::vector<std::string> args){ // adapted from stim.pybind.cc
+    std::vector<const char *> argv;
+    argv.push_back("stim.main");
+    for (const auto &arg : args) {
+      argv.push_back(arg.c_str());
+    }
+    return stim::main(argv.size(), argv.data());
+  }
+
   extern "C" void startup_clasp_extension() {
     using namespace clbind;
     using namespace stim;
@@ -17,134 +26,30 @@ namespace clasp_stim {
     // #include "stim/circuit/circuit.h"
     //s.def("add-saturate", &add_saturate, "(x y)"_ll, ""_docstring);
     //s.def("mul-saturate", &mul_saturate, "(x y)"_ll, ""_docstring);
-    class_<Circuit>(s,"circuit")
-      .def_constructor("make-circuit",constructor<>(),"")
-      .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
-      .def("str",&Circuit::str)
-      .def("compute-stats",&Circuit::compute_stats)
-      .def("append-from-file",&Circuit::append_from_file)
-      .def("append-from-text",&Circuit::append_from_text)
-      .def("clear",&Circuit::clear)
-      ;
+    // class_<Circuit>(s,"circuit")
+    //   .def_constructor("make-circuit",constructor<>(),"")
+    //   .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
+    //   .def("circuit-string",&Circuit::str)
+    //   .def("compute-stats",&Circuit::compute_stats)
+    //   .def("append-from-file",&Circuit::append_from_file)
+    //   .def("append-from-text",&Circuit::append_from_text)
+    //   .def("clear",&Circuit::clear)
+    //   ;
 
-    // #include "stim/circuit/circuit_instruction.h"
-    // #include "stim/circuit/gate_decomposition.h"
-    // #include "stim/circuit/gate_target.h"
-    // #include "stim/cmd/command_analyze_errors.h"
-    // #include "stim/cmd/command_convert.h"
-    // #include "stim/cmd/command_detect.h"
-    // #include "stim/cmd/command_diagram.h"
-    // #include "stim/cmd/command_explain_errors.h"
-    // #include "stim/cmd/command_gen.h"
-    // #include "stim/cmd/command_help.h"
-    // #include "stim/cmd/command_m2d.h"
-    // #include "stim/cmd/command_repl.h"
-    // #include "stim/cmd/command_sample.h"
-    // #include "stim/cmd/command_sample_dem.h"
-    // #include "stim/dem/dem_instruction.h"
-    // #include "stim/dem/detector_error_model.h"
-    // #include "stim/diagram/ascii_diagram.h"
-    // #include "stim/diagram/base64.h"
-    // #include "stim/diagram/basic_3d_diagram.h"
-    // #include "stim/diagram/circuit_timeline_helper.h"
-    // #include "stim/diagram/coord.h"
-    // #include "stim/diagram/crumble.h"
-    // #include "stim/diagram/crumble_data.h"
-    // #include "stim/diagram/detector_slice/detector_slice_set.h"
-    // #include "stim/diagram/diagram_util.h"
-    // #include "stim/diagram/gate_data_3d.h"
-    // #include "stim/diagram/gate_data_3d_texture_data.h"
-    // #include "stim/diagram/gate_data_svg.h"
-    // #include "stim/diagram/gltf.h"
-    // #include "stim/diagram/graph/match_graph_3d_drawer.h"
-    // #include "stim/diagram/graph/match_graph_svg_drawer.h"
-    // #include "stim/diagram/json_obj.h"
-    // #include "stim/diagram/lattice_map.h"
-    // #include "stim/diagram/timeline/timeline_3d_drawer.h"
-    // #include "stim/diagram/timeline/timeline_ascii_drawer.h"
-    // #include "stim/diagram/timeline/timeline_svg_drawer.h"
-    // #include "stim/gates/gates.h"
-    // #include "stim/gen/circuit_gen_params.h"
-    // #include "stim/gen/gen_color_code.h"
-    // #include "stim/gen/gen_rep_code.h"
-    // #include "stim/gen/gen_surface_code.h"
-    // #include "stim/io/measure_record.h"
-    // #include "stim/io/measure_record_batch.h"
-    // #include "stim/io/measure_record_batch_writer.h"
-    // #include "stim/io/measure_record_reader.h"
-    // #include "stim/io/measure_record_writer.h"
-    // #include "stim/io/raii_file.h"
-    // #include "stim/io/sparse_shot.h"
-    // #include "stim/io/stim_data_formats.h"
-    // #include "stim/main_namespaced.h"
-    // #include "stim/mem/bit_ref.h"
-    // #include "stim/mem/bitword.h"
-    // #include "stim/mem/bitword_128_sse.h"
-    // #include "stim/mem/bitword_256_avx.h"
-    // #include "stim/mem/bitword_64.h"
-    // #include "stim/mem/fixed_cap_vector.h"
-    // #include "stim/mem/monotonic_buffer.h"
-    // #include "stim/mem/simd_bit_table.h"
-    // #include "stim/mem/simd_bits.h"
-    // #include "stim/mem/simd_bits_range_ref.h"
-    // #include "stim/mem/simd_util.h"
-    // #include "stim/mem/simd_word.h"
-    // #include "stim/mem/span_ref.h"
-    // #include "stim/mem/sparse_xor_vec.h"
-    // #include "stim/search/graphlike/algo.h"
-    // #include "stim/search/graphlike/edge.h"
-    // #include "stim/search/graphlike/graph.h"
-    // #include "stim/search/graphlike/node.h"
-    // #include "stim/search/graphlike/search_state.h"
-    // #include "stim/search/hyper/algo.h"
-    // #include "stim/search/hyper/edge.h"
-    // #include "stim/search/hyper/graph.h"
-    // #include "stim/search/hyper/node.h"
-    // #include "stim/search/hyper/search_state.h"
-    // #include "stim/search/sat/wcnf.h"
-    // #include "stim/search/search.h"
-    // #include "stim/simulators/dem_sampler.h"
-    // #include "stim/simulators/error_analyzer.h"
-    // #include "stim/simulators/error_matcher.h"
-    // #include "stim/simulators/force_streaming.h"
-    // #include "stim/simulators/frame_simulator.h"
-    // #include "stim/simulators/frame_simulator_util.h"
-    // #include "stim/simulators/graph_simulator.h"
-    // #include "stim/simulators/matched_error.h"
-    // #include "stim/simulators/measurements_to_detection_events.h"
-    // #include "stim/simulators/sparse_rev_frame_tracker.h"
-    // #include "stim/simulators/tableau_simulator.h"
-    // #include "stim/simulators/vector_simulator.h"
-    // #include "stim/stabilizers/flex_pauli_string.h"
-    // #include "stim/stabilizers/flow.h"
-    // #include "stim/stabilizers/pauli_string.h"
-    // #include "stim/stabilizers/pauli_string_iter.h"
-    // #include "stim/stabilizers/pauli_string_ref.h"
-    // #include "stim/stabilizers/tableau.h"
-    // #include "stim/stabilizers/tableau_iter.h"
-    // #include "stim/stabilizers/tableau_transposed_raii.h"
-    // #include "stim/util_bot/arg_parse.h"
-    // #include "stim/util_bot/error_decomp.h"
-    // #include "stim/util_bot/probability_util.h"
-    // #include "stim/util_bot/str_util.h"
-    // #include "stim/util_bot/twiddle.h"
-    // #include "stim/util_top/circuit_flow_generators.h"
-    // #include "stim/util_top/circuit_inverse_qec.h"
-    // #include "stim/util_top/circuit_inverse_unitary.h"
-    // #include "stim/util_top/circuit_to_dem.h"
-    // #include "stim/util_top/circuit_to_detecting_regions.h"
-    // #include "stim/util_top/circuit_vs_amplitudes.h"
-    // #include "stim/util_top/circuit_vs_tableau.h"
-    // #include "stim/util_top/count_determined_measurements.h"
-    // #include "stim/util_top/export_crumble_url.h"
-    // #include "stim/util_top/export_qasm.h"
-    // #include "stim/util_top/export_quirk_url.h"
-    // #include "stim/util_top/has_flow.h"
-    // #include "stim/util_top/reference_sample_tree.h"
-    // #include "stim/util_top/simplified_circuit.h"
-    // #include "stim/util_top/stabilizers_to_tableau.h"
-    // #include "stim/util_top/stabilizers_vs_amplitudes.h"
-    // #include "stim/util_top/transform_without_feedback.h"
-    fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
+    // src/stim/py/stim.pybind.cc contains the pybind bindings.
+    // The clbind bindings should follow this as closely as possible, as they form a documented API.
+    // There are 28 classes exposed.
+    // The problem is that a lot of them return pybind11::objects, whereas we would prefer to use c++/lisp
+    // type translators.
+    // Writing our own will be time consuming. Can the existing ones be adapted somehow?
+    // Try importing only a few functions to begin with, like main().
+    // Also, do a smallish class by hand.
+    // Ambitious: use clasp to scrape the definitions?
+    //class_<DemSampler<MAX_BITWORD_WIDTH>>(s,"dem-sampler");
+    //class_<CompiledDetectorSampler>(s,"compiled-dem-sampler");
+    //class_<CompiledMeasurementSampler>(s,"compiled-measurement-sampler");
+
+    s.def("main",&stim_main);
+      fmt::print("Exited {}:{}:{}\nMAX_BITWORD_WIDTH {}", __FILE__, __LINE__, __FUNCTION__,MAX_BITWORD_WIDTH);
   }
 }; // namespace clasp_stim
