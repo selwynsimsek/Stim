@@ -24,19 +24,22 @@ namespace clasp_stim {
     //   .def("clear",&Circuit::clear)
     //   ;
 
-    // src/stim/py/stim.pybind.cc contains the pybind bindings.
-    // The clbind bindings should follow this as closely as possible, as they form a documented API.
-    // There are 28 classes exposed.
-    // The problem is that a lot of them return pybind11::objects, whereas we would prefer to use c++/lisp
-    // type translators.
-    // Writing our own will be time consuming. Can the existing ones be adapted somehow?
-    // Try importing only a few functions to begin with, like main().
-    // Also, do a smallish class by hand.
-    // Ambitious: use clasp to scrape the definitions?
-    //class_<DemSampler<MAX_BITWORD_WIDTH>>(s,"dem-sampler");
-    //class_<CompiledDetectorSampler>(s,"compiled-dem-sampler");
-    //class_<CompiledMeasurementSampler>(s,"compiled-measurement-sampler");
-
+    // 'Module-level' methods
+    s.def("target-rec",&target_rec);
+    s.def("target-inverse-target",&target_inv_target);
+    s.def("target-inverse-integer",&target_inv_uint32_t);
+    s.def("target-combiner",&stim::GateTarget::combiner);
+    s.def("target-x-target",&target_x_target);
+    s.def("target-x-integer",&target_x_uint32_t);
+    s.def("target-y-target",&target_y_target);
+    s.def("target-y-integer",&target_y_uint32_t);
+    s.def("target-z-target",&target_z_target);
+    s.def("target-z-integer",&target_z_uint32_t);
+    s.def("target-pauli-string",&target_pauli_string);
+    s.def("target-pauli-integer",&target_pauli_uint8_t);
+    s.def("target-combined-paulis-string",&target_combined_paulis_string);
+    s.def("target-combined-paulis-gate-targets",&target_combined_paulis_gate_targets);
+    s.def("target-sweep-bit",&target_sweep_bit);
     s.def("main",&stim_main);
 
       fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
