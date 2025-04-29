@@ -3,26 +3,14 @@
 #include <fmt/format.h>
 #include <clasp/clasp.h>
 #include "stim.h"
+#include "stim_clbind.h"
 
 namespace clasp_stim {
 
-  void hello_world(double x, double y) { fmt::print("Hello World! Did you know that {} + {} = {}?\n", x, y, x + y); }
-
-  int stim_main(const std::vector<std::string> args){ // adapted from stim.pybind.cc
-    std::vector<const char *> argv;
-    argv.push_back("stim.main");
-    for (const auto &arg : args) {
-      argv.push_back(arg.c_str());
-    }
-    return stim::main(argv.size(), argv.data());
-  }
-
   extern "C" void startup_clasp_extension() {
     using namespace clbind;
-    using namespace stim;
     fmt::print("Entered {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
     package_ s("STIM", {}, {"COMMON-LISP"});
-    s.def("hello-world", &hello_world, "(x y)"_ll, "Hello world that adds numbers."_docstring);
     // #include "stim/circuit/circuit.h"
     //s.def("add-saturate", &add_saturate, "(x y)"_ll, ""_docstring);
     //s.def("mul-saturate", &mul_saturate, "(x y)"_ll, ""_docstring);
@@ -50,6 +38,7 @@ namespace clasp_stim {
     //class_<CompiledMeasurementSampler>(s,"compiled-measurement-sampler");
 
     s.def("main",&stim_main);
-      fmt::print("Exited {}:{}:{}\nMAX_BITWORD_WIDTH {}", __FILE__, __LINE__, __FUNCTION__,MAX_BITWORD_WIDTH);
+
+      fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
   }
 }; // namespace clasp_stim

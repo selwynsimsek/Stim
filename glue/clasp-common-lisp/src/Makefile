@@ -11,9 +11,10 @@ endif
 
 all: libstimclasp.so
 
-libstimclasp.so: stim-clasp.cc
-	clang++ -I/usr/include/python3.11 -static -c -I../../../src -fPIC ${CFLAGS} stim-clasp.cc
-	clang++ ${LIBFLAGS} -L../../../build/out -lpython3.11 -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so stim-clasp.o  ${LDFLAGS}
+libstimclasp.so: stim_clasp.cc stim_clbind.cc
+	clang++ -static -c -I../../../src -fPIC ${CFLAGS} stim_clasp.cc
+	clang++ -static -c -I../../../src -fPIC ${CFLAGS} stim_clbind.cc
+	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so stim_clasp.o stim_clbind.o ${LDFLAGS}
 
 clean:
 	rm -f *.o *.so
