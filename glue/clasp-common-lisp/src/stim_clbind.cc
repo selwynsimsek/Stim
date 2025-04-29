@@ -166,4 +166,11 @@ namespace clasp_stim {
   FlexPauliString flex_pauli_from_text(std::string v){
     return FlexPauliString::from_text(v);
   }
+  FlexPauliString pauli_iterator_get_current(const PauliStringIterator<MAX_BITWORD_WIDTH> iterator){
+    //& doesn't work?
+    FlexPauliString result(iterator.num_qubits);// TODO work out why FlexPauliString constructor doesnt work
+    result.value=iterator.result;
+    result.imag=false;
+    return result;
+  }
 }

@@ -70,7 +70,7 @@ namespace clasp_stim {
       .def("flex-pauli-string-str",&FlexPauliString::str)
       .def("flex-pauli-string-phase",&FlexPauliString::get_phase)
       .def("flex-pauli-string+",&FlexPauliString::operator+)
-      .def("flex-pauli-string+=",&FlexPauliString::operator+=)
+      .def("flex-pauli-string+=",&FlexPauliString::operator+=) // TODO Fix exposing of overloaded methods
       //.def("flex-pauli-string*-complex",(FlexPauliString(*)(std::complex<float>)) &FlexPauliString::operator*)
       //.def("flex-pauli-string*-flex-pauli-string",(FlexPauliString(*)(FlexPauliString&))&FlexPauliString::operator)
       .def("flex-pauli-string/",&FlexPauliString::operator/)
@@ -80,6 +80,12 @@ namespace clasp_stim {
       .def("flex-pauli-string-equal-p",&FlexPauliString::operator==)
       .def("flex-pauli-string-not-equal-p",&FlexPauliString::operator!=);
     s.def("pauli-string-from-text",&flex_pauli_from_text);
+
+    // PauliStringIterator
+     class_<PauliStringIterator<MAX_BITWORD_WIDTH>>(s,"pauli-string-iterator")
+        .def_constructor("make-pauli-string-iterator",constructor<uint32_t,uint32_t,uint32_t,bool, bool, bool>())
+      .def("pauli-string-iterator-next",&PauliStringIterator<MAX_BITWORD_WIDTH>::iter_next);
+     s.def("pauli-string-iterator-current",&pauli_iterator_get_current);
 
     // circuit_gate_target
     using namespace stim;

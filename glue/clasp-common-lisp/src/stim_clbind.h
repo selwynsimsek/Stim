@@ -42,4 +42,5 @@ namespace clasp_stim {
 
   GateTarget gate_target_from_target_str(std::string v);
   FlexPauliString flex_pauli_from_text(std::string v);
+  FlexPauliString pauli_iterator_get_current(const PauliStringIterator<MAX_BITWORD_WIDTH> iterator);
     }
