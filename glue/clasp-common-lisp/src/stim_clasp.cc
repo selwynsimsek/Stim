@@ -15,22 +15,21 @@ namespace clasp_stim {
 
   extern "C" void startup_clasp_extension() {
     using namespace clbind;
+    using namespace stim;
     fmt::print("Entered {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
     package_ s(ClaspStimPkg);
-    // #include "stim/circuit/circuit.h"
-    //s.def("add-saturate", &add_saturate, "(x y)"_ll, ""_docstring);
-    //s.def("mul-saturate", &mul_saturate, "(x y)"_ll, ""_docstring);
-    // class_<Circuit>(s,"circuit")
-    //   .def_constructor("make-circuit",constructor<>(),"")
-    //   .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
-    //   .def("circuit-string",&Circuit::str)
-    //   .def("compute-stats",&Circuit::compute_stats)
-    //   .def("append-from-file",&Circuit::append_from_file)
-    //   .def("append-from-text",&Circuit::append_from_text)
-    //   .def("clear",&Circuit::clear)
-    //   ;
+    // We imitate the API laid out in src/stim/py/ystim.pybind.cc.
+    // Not everything will be possible or useful to port, but most of it will.
+    // We proceed by porting the module exposing code in order, on line 573 starting
+    // PYBIND11_MODULE(STIM_PYBIND11_MODULE_NAME, m) {.
+    // Parts of comments within square brackets are intended to illustrate the equivalent part of pybind that is being ported.
 
-    // 'Module-level' methods
+    // With pybind, classes are registered before functions/methods. This is not necessary with clbind.
+
+    // We start by doing the top level function definitions:
+
+    // 'Module-level' methods [start top_level(m)]
+    // TODO Add comments. more complicated lambda list with optional parameter for 'invert'?
     s.def("target-rec",&target_rec);
     s.def("target-inverse-target",&target_inv_target);
     s.def("target-inverse-integer",&target_inv_uint32_t);
@@ -47,38 +46,38 @@ namespace clasp_stim {
     s.def("target-combined-paulis-gate-targets",&target_combined_paulis_gate_targets);
     s.def("target-sweep-bit",&target_sweep_bit);
     s.def("main",&stim_main);
-    // TODO pybind_read_write
+    // [end top_level]
 
+    // [start pybind_read_write] TODO Implement these
     //s.def("read-shot-data-file",&read_shot_data_file);
     //s.def("write-shot-data-file",&write_shot_data_file);
+    // [end pybind_read_write]
 
-    //core::Symbol_sp y = core::lisp_intern("*SAMPLE-FORMAT-TRANSLATOR*","STIM");
-    //y->exportYourself();
-
-    // expose classes
-
-    // dem_sampler
-    class_<DemSampler<MAX_BITWORD_WIDTH>>(s,"dem-sampler");
-    // TODO compiled detector sampler (needs its own class)
+    // We start by exposing all the classes that are not in the pybind namespace (it would be problematic to build with pybind and we ultimately don't need it.)
+    // It is intended (TODO) that those classes which are in the pybind namespace will be themselves ported to clbind and exposed here. There are nine of them.
+    // [start class definitions]
+    // TODO Add methods
+    class_<DemSampler<MAX_BITWORD_WIDTH>>(s,"compiled-dem-sampler");
+    // TODO compiled detector sampler (python)
     //class_<CompiledDetectorSampler>(s,"compiled-detector-sampler");
-    // TODO compiled measurement sampler (needs its own class)
+    // TODO compiled measurement sampler (python)
     //class_<CompiledMeasurementSampler>(s,"compiled-detector-sampler");
-    // TODO _compiled_m2d_converter
+    // TODO _compiled_m2d_converter (python)
     // pauli_string
-    class_<FlexPauliString>(s,"flex-pauli-string")
-      .def_constructor("make-flex-pauli-string",constructor<uint32_t>()) // TODO fix size_t
-      .def("flex-pauli-string-str",&FlexPauliString::str)
-      .def("flex-pauli-string-phase",&FlexPauliString::get_phase)
-      .def("flex-pauli-string+",&FlexPauliString::operator+)
-      .def("flex-pauli-string+=",&FlexPauliString::operator+=) // TODO Fix exposing of overloaded methods
+    class_<FlexPauliString>(s,"pauli-string")
+      .def_constructor("make-pauli-string",constructor<uint32_t>()) // TODO fix size_t
+      .def("pauli-string-str",&FlexPauliString::str)
+      .def("pauli-string-phase",&FlexPauliString::get_phase)
+      .def("pauli-string+",&FlexPauliString::operator+)
+      .def("pauli-string+=",&FlexPauliString::operator+=) // TODO Fix exposing of overloaded methods
       //.def("flex-pauli-string*-complex",(FlexPauliString(*)(std::complex<float>)) &FlexPauliString::operator*)
       //.def("flex-pauli-string*-flex-pauli-string",(FlexPauliString(*)(FlexPauliString&))&FlexPauliString::operator)
-      .def("flex-pauli-string/",&FlexPauliString::operator/)
+      .def("pauli-string/",&FlexPauliString::operator/)
       //.def("flex-pauli-string*=-complex",(FlexPauliString(*)(std::complex<float>))&FlexPauliString::operator*=)
       //.def("flex-pauli-string*=-flex-pauli-string",(FlexPauliString(*)(FlexPauliString&))&FlexPauliString::operator*=)
-      .def("flex-pauli-string/=",&FlexPauliString::operator/=)
-      .def("flex-pauli-string-equal-p",&FlexPauliString::operator==)
-      .def("flex-pauli-string-not-equal-p",&FlexPauliString::operator!=);
+      .def("pauli-string/=",&FlexPauliString::operator/=)
+      .def("pauli-string-equal-p",&FlexPauliString::operator==)
+      .def("pauli-string-not-equal-p",&FlexPauliString::operator!=);
     s.def("pauli-string-from-text",&flex_pauli_from_text);
 
     // PauliStringIterator
@@ -87,8 +86,13 @@ namespace clasp_stim {
       .def("pauli-string-iterator-next",&PauliStringIterator<MAX_BITWORD_WIDTH>::iter_next);
      s.def("pauli-string-iterator-current",&pauli_iterator_get_current);
 
+     // Tableau
+     class_<Tableau<MAX_BITWORD_WIDTH>>(s,"tableau")
+       ;
+     // TableauIterator
+     class_<TableauIterator<MAX_BITWORD_WIDTH>>(s,"tableau-iterator")
+       ;
     // circuit_gate_target
-    using namespace stim;
     class_<GateTarget>(s,"gate-target")
       .def("rec-offset",&GateTarget::rec_offset)
       .def("has-qubit-value-p",&GateTarget::has_qubit_value)
@@ -113,5 +117,59 @@ namespace clasp_stim {
       .def("target-str",&GateTarget::target_str);
     s.def("gate-target-from-string",&gate_target_from_target_str);
       fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
+      // GateData
+      class_<Gate>(s,"gate")
+        ;
+      // CircuitInstruction (python)
+      // CircuitRepeatBlock (python)
+      // Circuit
+       class_<Circuit>(s,"circuit")
+         .def_constructor("make-circuit",constructor<>(),"")
+         .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
+         .def("circuit-string",&Circuit::str)
+         .def("compute-stats",&Circuit::compute_stats)
+         .def("append-from-file",&Circuit::append_from_file)
+         .def("append-from-text",&Circuit::append_from_text)
+         .def("clear",&Circuit::clear)
+         ;
+       // ExposedDemInstruction (python)
+       // ExposedDemTarget (python)
+       // ExposedDemRepeatBlock (python)
+       // DetectorErrorModel
+       class_<DetectorErrorModel>(s,"detector-error-model")
+         ;
+       // TableauSimulator
+       class_<TableauSimulator<MAX_BITWORD_WIDTH>>(s,"tableau-simulator")
+         ;
+       // FrameSimulator
+       class_<FrameSimulator<MAX_BITWORD_WIDTH>>(s,"frame-simulator")
+         ;
+
+       // CircuitErrorLocationStackFrame
+       class_<CircuitErrorLocationStackFrame>(s,"circuit-error-location-stack-frame")
+         ;
+       // GateTargetWithCoords
+       class_<GateTargetWithCoords>(s,"gate-target-with-coords")
+         ;
+       // dem_target_with_coords
+       class_<DemTargetWithCoords>(s,"dem-target-with-coords")
+         ;
+       // flipped_measurement
+       class_<FlippedMeasurement>(s,"flipped-measurement")
+         ;
+       // circuit_targets_inside_instruction
+       class_<CircuitTargetsInsideInstruction>(s,"circuit-targets-inside-instruction")
+         ;
+       // circuit_error_location
+       class_<CircuitErrorLocation>(s,"circuit-error-location")
+         ;
+       // circuit_error_location_methods
+       class_<ExplainedError>(s,"explained-error")
+         ;
+       // flow
+       class_<Flow<MAX_BITWORD_WIDTH>>(s,"flow")
+         ;
+       // diagram_helper (python)
+       //end [class definitions]
   }
 }; // namespace clasp_stim

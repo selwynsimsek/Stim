@@ -173,4 +173,11 @@ namespace clasp_stim {
     result.imag=false;
     return result;
   }
+
+  //void write_shot_data_file(core::MDArray_sp data, std::string path_obj, SampleFormat format, size_t num_measurements, size_t num_detectors, size_t num_observables){
+    // do nothing
+  //}
+  //core::MDArray_sp read_shot_data_file(std::string path_obj, SampleFormat format, size_t num_measurements, size_t num_detectors, size_t num_observables, bool separate_observables, bool bit_packed, bool _legacy_bit_pack){
+  //return core__make_mdarray(nil<core::T_O>(),ext::_sym_integer32);
+  //}
 }
