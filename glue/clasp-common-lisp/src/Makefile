@@ -9,22 +9,21 @@ else
 	LIBFLAGS=-shared
 endif
 
+objects = stim_clasp.o stim_clbind.o translators.o
+
 all: libstimclasp.so
 
-stim_clasp.o: stim_clasp.cc stim_clbind.h
-	clang++ -static -c -I../../../src -fPIC ${CFLAGS} stim_clasp.cc
+$(objects): %.o: %.cc
+	clang++ -static -c -I../../../src -fPIC ${CFLAGS} $^
 
-stim_clbind.o: stim_clbind.cc stim_clbind.h
-	clang++ -static -c -I../../../src -fPIC ${CFLAGS} stim_clbind.cc
+libstimclasp.so: ${objects}
+	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so $^ ${LDFLAGS}
 
-libstimclasp.so: stim_clasp.o stim_clbind.o
-	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so stim_clasp.o stim_clbind.o ${LDFLAGS}
+run: libstimclasp.so
+	rlwrap clasp --eval '(ql:quickload :stim)'
 
-run:
-	clasp --eval '(ql:quickload :stim)'
-
-run-quit:
-	time clasp --eval '(ql:quickload :stim)' --eval '(uiop:quit)'
+run-quit: libstimclasp.so
+	time rlwrap clasp --eval '(ql:quickload :stim)' --eval '(uiop:quit)'
 
 clean:
 	rm -f *.o *.so

@@ -160,4 +160,10 @@ namespace clasp_stim {
   GateTarget target_sweep_bit(uint32_t qubit){
     return GateTarget::sweep_bit(qubit);
   }
+  GateTarget gate_target_from_target_str(std::string v){
+    return GateTarget::from_target_str(v);
+  }
+  FlexPauliString flex_pauli_from_text(std::string v){
+    return FlexPauliString::from_text(v);
+  }
 }
