@@ -13,14 +13,14 @@ objects = stim_clasp.o stim_clbind.o translators.o
 
 all: libstimclasp.so
 
-$(objects): %.o: %.cc
-	clang++ -static -c -I../../../src -fPIC ${CFLAGS} $^
+$(objects): %.o: %.cc stim_clbind.h
+	clang++ -static -c -I../../../src -fPIC ${CFLAGS} $<
 
 libstimclasp.so: ${objects}
 	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so $^ ${LDFLAGS}
 
 run: libstimclasp.so
-	rlwrap clasp --eval '(ql:quickload :stim)' --eval '(in-package :stim)' 
+	rlwrap clasp --eval '(ql:quickload :stim)' --eval '(in-package :stim)'
 
 run-quit: libstimclasp.so
 	time rlwrap clasp --eval '(ql:quickload :stim)' --eval '(uiop:quit)'

@@ -10,9 +10,8 @@
     (uiop:run-program (format nil "cd ~a && make" glue-directory)
                       :force-shell t :output *error-output*
                       :error-output *error-output*)
+    
     ;; Rebuild glue code on loading the library
-
-
     ;; Now load the foreign library
 
     (cffi:load-foreign-library #+darwin "libstimclasp.dylib"

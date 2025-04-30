@@ -11,7 +11,17 @@ NAMESPACE_PACKAGE_ASSOCIATION(clasp_stim, ClaspStimPkg, "STIM");
 
 //CLBIND_TRANSLATE_SYMBOL_TO_ENUM(stim::SampleFormat, clasp_stim::_sym_STARsampleFormatTranslatorSTAR );
 
-namespace clasp_stim {
+namespace clasp_stim{
+  template<typename K, typename V>
+  map<V, K> reverse_map(const map<K, V>& m) {
+    map<V, K> r;
+    for (const auto& kv : m)
+      r[kv.second] = kv.first;
+    return r;
+  }
+stim::GateType enum_test(GateFlags type){
+    return stim::GateType::OBSERVABLE_INCLUDE;
+  }
   core::T_sp test(int a,core::MDArray_sp b)
   {
     if(a%2)
@@ -24,6 +34,7 @@ namespace clasp_stim {
     fmt::print("Entered {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
     package_ s(ClaspStimPkg);
     s.def("test",&test);
+    s.def("enum-test",&enum_test);
     // We imitate the API laid out in src/stim/py/ystim.pybind.cc.
     // Not everything will be possible or useful to port, but most of it will.
     // We proceed by porting the module exposing code in order, on line 573 starting
@@ -180,3 +191,17 @@ namespace clasp_stim {
        //end [class definitions]
   }
 }; // namespace clasp_stim
+
+// trnslate enums
+
+CLBIND_EXPOSE_MACRO(stim::GateType,({{"NOT-A-GATE", GateType::NOT_A_GATE},
+                                     {"DETECTOR",GateType::DETECTOR},
+                                     {"OBSERVABLE-INCLUDE",GateType::OBSERVABLE_INCLUDE},
+                                     {"TICK",GateType::TICK},
+                                     {"QUBIT-COORDINATES",GateType::QUBIT_COORDS},
+                                     {"SHIFT-COORDINATES",GateType::SHIFT_COORDS},
+                                     {"REPEAT",GateType::REPEAT}}));
+
+CLBIND_EXPOSE_MACRO(stim::GateFlags,({{"GATE-UNITARY-P",GateFlags::GATE_IS_UNITARY}}));
+
+
