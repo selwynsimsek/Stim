@@ -36,9 +36,6 @@ namespace clasp_stim {
   GateTarget target_pauli_string(uint32_t qubit_index, const std::string &pauli, bool invert);
   GateTarget target_pauli_uint8_t(uint32_t qubit_index, const uint8_t &pauli, bool invert);
   GateTarget target_sweep_bit(uint32_t qubit);
-  // stim_pybind::pybind_read_write
-  //void write_shot_data_file(core::MDArray_sp data, std::string path_obj, SampleFormat format, size_t num_measurements, size_t num_detectors, size_t num_observables);
-  //core::MDArray_sp read_shot_data_file(std::string path_obj, SampleFormat format, size_t num_measurements, size_t num_detectors, size_t num_observables, bool separate_observables, bool bit_packed, bool _legacy_bit_pack);
 
   GateTarget gate_target_from_target_str(std::string v);
   FlexPauliString flex_pauli_from_text(std::string v);

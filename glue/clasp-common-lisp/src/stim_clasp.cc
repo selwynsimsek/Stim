@@ -12,12 +12,18 @@ NAMESPACE_PACKAGE_ASSOCIATION(clasp_stim, ClaspStimPkg, "STIM");
 //CLBIND_TRANSLATE_SYMBOL_TO_ENUM(stim::SampleFormat, clasp_stim::_sym_STARsampleFormatTranslatorSTAR );
 
 namespace clasp_stim {
-
+  core::T_sp test(int a,core::MDArray_sp b)
+  {
+    if(a%2)
+    return core__make_mdarray(nil<core::T_O>(),ext::_sym_integer32);
+    else return nil<core::T_O>();
+  }
   extern "C" void startup_clasp_extension() {
     using namespace clbind;
     using namespace stim;
     fmt::print("Entered {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
     package_ s(ClaspStimPkg);
+    s.def("test",&test);
     // We imitate the API laid out in src/stim/py/ystim.pybind.cc.
     // Not everything will be possible or useful to port, but most of it will.
     // We proceed by porting the module exposing code in order, on line 573 starting
@@ -48,10 +54,7 @@ namespace clasp_stim {
     s.def("main",&stim_main);
     // [end top_level]
 
-    // [start pybind_read_write] TODO Implement these
-    //s.def("read-shot-data-file",&read_shot_data_file);
-    //s.def("write-shot-data-file",&write_shot_data_file);
-    // [end pybind_read_write]
+    // pybind_read_write would also be exposed. But there is no use in porting its two methods to Common Lisp.
 
     // We start by exposing all the classes that are not in the pybind namespace (it would be problematic to build with pybind and we ultimately don't need it.)
     // It is intended (TODO) that those classes which are in the pybind namespace will be themselves ported to clbind and exposed here. There are nine of them.
@@ -88,6 +91,10 @@ namespace clasp_stim {
 
      // Tableau
      class_<Tableau<MAX_BITWORD_WIDTH>>(s,"tableau")
+       .def_constructor("make-tableau",constructor<uint32_t>())
+       .def("tableau-str",&Tableau<MAX_BITWORD_WIDTH>::str)
+       .def("tableau-then",&Tableau<MAX_BITWORD_WIDTH>::then)
+       .def("tableau-inverse",&Tableau<MAX_BITWORD_WIDTH>::inverse)
        ;
      // TableauIterator
      class_<TableauIterator<MAX_BITWORD_WIDTH>>(s,"tableau-iterator")

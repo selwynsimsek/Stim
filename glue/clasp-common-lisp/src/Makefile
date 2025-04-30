@@ -20,7 +20,7 @@ libstimclasp.so: ${objects}
 	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so $^ ${LDFLAGS}
 
 run: libstimclasp.so
-	rlwrap clasp --eval '(ql:quickload :stim)'
+	rlwrap clasp --eval '(ql:quickload :stim)' --eval '(in-package :stim)' 
 
 run-quit: libstimclasp.so
 	time rlwrap clasp --eval '(ql:quickload :stim)' --eval '(uiop:quit)'
