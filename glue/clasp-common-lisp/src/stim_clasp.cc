@@ -111,64 +111,64 @@ stim::GateType enum_test(GateFlags type){
      class_<TableauIterator<MAX_BITWORD_WIDTH>>(s,"tableau-iterator")
        ;
     // circuit_gate_target
-    class_<GateTarget>(s,"gate-target")
-      .def("rec-offset",&GateTarget::rec_offset)
-      .def("has-qubit-value-p",&GateTarget::has_qubit_value)
-      .def("combiner-p",&GateTarget::is_combiner)
-      .def("x-target-p",&GateTarget::is_x_target)
-      .def("y-target-p",&GateTarget::is_y_target)
-      .def("z-target-p",&GateTarget::is_z_target)
-      .def("inverted-result-target-p",&GateTarget::is_inverted_result_target)
-      .def("measurement-record-target-p",&GateTarget::is_measurement_record_target)
-      .def("qubit-target-p",&GateTarget::is_qubit_target)
-      .def("sweep-bit-target-p",&GateTarget::is_sweep_bit_target)
-      .def("classical-bit-target-p",&GateTarget::is_classical_bit_target)
-      .def("pauli-target-p",&GateTarget::is_pauli_target)
-      .def("gate-target-qubit-value",&GateTarget::qubit_value)
-      .def("gate-target-value",&GateTarget::value)
-      .def("gate-target-equal-p",&GateTarget::operator==)
-      .def("gate-target-not-equal-p",&GateTarget::operator!=)
-      .def("gate-target-<",&GateTarget::operator<)
-      .def("gate-target-str",&GateTarget::str)
-      .def("gate-target-repr",&GateTarget::repr)
-      .def("gate-target-pauli-type",&GateTarget::pauli_type)
-      .def("target-str",&GateTarget::target_str);
-    s.def("gate-target-from-string",&gate_target_from_target_str);
-      fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
+     class_<GateTarget>(s,"gate-target")
+       .def("rec-offset",&GateTarget::rec_offset)
+       .def("has-qubit-value-p",&GateTarget::has_qubit_value)
+       .def("combiner-p",&GateTarget::is_combiner)
+       .def("x-target-p",&GateTarget::is_x_target)
+       .def("y-target-p",&GateTarget::is_y_target)
+       .def("z-target-p",&GateTarget::is_z_target)
+       .def("inverted-result-target-p",&GateTarget::is_inverted_result_target)
+       .def("measurement-record-target-p",&GateTarget::is_measurement_record_target)
+       .def("qubit-target-p",&GateTarget::is_qubit_target)
+       .def("sweep-bit-target-p",&GateTarget::is_sweep_bit_target)
+       .def("classical-bit-target-p",&GateTarget::is_classical_bit_target)
+       .def("pauli-target-p",&GateTarget::is_pauli_target)
+       .def("gate-target-qubit-value",&GateTarget::qubit_value)
+       .def("gate-target-value",&GateTarget::value)
+       .def("gate-target-equal-p",&GateTarget::operator==)
+       .def("gate-target-not-equal-p",&GateTarget::operator!=)
+       .def("gate-target-<",&GateTarget::operator<)
+       .def("gate-target-str",&GateTarget::str)
+       .def("gate-target-repr",&GateTarget::repr)
+       .def("gate-target-pauli-type",&GateTarget::pauli_type)
+       .def("target-str",&GateTarget::target_str);
+     s.def("gate-target-from-string",&gate_target_from_target_str);
+     fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
       // GateData
-      class_<Gate>(s,"gate")
-        ;
+     class_<Gate>(s,"gate")
+       ;
       // CircuitInstruction (python)
       // CircuitRepeatBlock (python)
       // Circuit
-       class_<Circuit>(s,"circuit")
-         .def_constructor("make-circuit",constructor<>(),"")
-         .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
-         .def("circuit-string",&Circuit::str)
-         .def("compute-stats",&Circuit::compute_stats)
-         .def("append-from-file",&Circuit::append_from_file)
-         .def("append-from-text",&Circuit::append_from_text)
-         .def("clear",&Circuit::clear)
-         ;
+     class_<Circuit>(s,"circuit")
+       .def_constructor("make-circuit",constructor<>(),"")
+       .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
+       .def("circuit-string",&Circuit::str)
+       .def("compute-stats",&Circuit::compute_stats)
+       .def("append-from-file",&Circuit::append_from_file)
+       .def("append-from-text",&Circuit::append_from_text)
+       .def("clear",&Circuit::clear)
+       ;
        // ExposedDemInstruction (python)
        // ExposedDemTarget (python)
        // ExposedDemRepeatBlock (python)
        // DetectorErrorModel
-       class_<DetectorErrorModel>(s,"detector-error-model")
-         ;
+     class_<DetectorErrorModel>(s,"detector-error-model")
+       ;
        // TableauSimulator
-       class_<TableauSimulator<MAX_BITWORD_WIDTH>>(s,"tableau-simulator")
-         ;
+     class_<TableauSimulator<MAX_BITWORD_WIDTH>>(s,"tableau-simulator")
+       ;
        // FrameSimulator
-       class_<FrameSimulator<MAX_BITWORD_WIDTH>>(s,"frame-simulator")
-         ;
+     class_<FrameSimulator<MAX_BITWORD_WIDTH>>(s,"frame-simulator")
+       ;
 
        // CircuitErrorLocationStackFrame
-       class_<CircuitErrorLocationStackFrame>(s,"circuit-error-location-stack-frame")
-         ;
+     class_<CircuitErrorLocationStackFrame>(s,"circuit-error-location-stack-frame")
+       ;
        // GateTargetWithCoords
-       class_<GateTargetWithCoords>(s,"gate-target-with-coords")
-         ;
+     class_<GateTargetWithCoords>(s,"gate-target-with-coords")
+       ;
        // dem_target_with_coords
        class_<DemTargetWithCoords>(s,"dem-target-with-coords")
          ;

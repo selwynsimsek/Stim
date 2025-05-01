@@ -22,6 +22,7 @@ using namespace stim;
 namespace clasp_stim {
   class CircuitOperation {};
   class CompiledM2DConverter {};
+  class CompiledDemSampler {};
   class CompiledDetectorSampler {};
   class CompiledMeasurementSampler {};
   class CompiledM2DSampler {};
@@ -143,41 +144,82 @@ namespace clasp_stim {
 //         stim.Circuit.flattened
   Circuit circuit__flattened(Circuit &self);
 //         stim.Circuit.from_file
-
+  Circuit circuit__from_file(std::string file);
 //         stim.Circuit.generated
-//         stim.Circuit.get_detector_coordinates
+  Circuit circuit__generated(std::string code_task, uint32_t distance, uint32_t rounds,
+                             float after_clifford_depolarization, float before_round_data_depolarization,
+                             float before_measure_flip_probability, float after_reset_flip_probability);
+  //         stim.Circuit.get_detector_coordinates
+  core::T_sp circuit__get_detector_coordinates(Circuit self);
+  core::T_sp circuit__get_detector_coordinates_only(Circuit self, std::vector<uint32_t> only);
 //         stim.Circuit.get_final_qubit_coordinates
+  core::T_sp circuit__get_final_qubit_coordinates(Circuit self);
 //         stim.Circuit.has_all_flows
-//         stim.Circuit.has_flow
+  bool circuit__has_all_flows(Circuit self, std::vector<Flow<MAX_BITWORD_WIDTH>> flows, bool unsigned_p);
+  //         stim.Circuit.has_flow
+  bool circuit__has_flow(Circuit self, Flow<MAX_BITWORD_WIDTH> flow, bool unsigned_p);
 //         stim.Circuit.inverse
+  Circuit circuit__inverse(Circuit self);
 //         stim.Circuit.likeliest_error_sat_problem
+  std::string circuit__likeliest_error_sat_problem_wdimacs(Circuit self, uint32_t quantization);
 //         stim.Circuit.num_detectors
-//         stim.Circuit.num_measurements
-//         stim.Circuit.num_observables
-//         stim.Circuit.num_qubits
-//         stim.Circuit.num_sweep_bits
-//         stim.Circuit.num_ticks
+  uint32_t circuit__num_detectors(Circuit self);
+  //         stim.Circuit.num_measurements
+  uint32_t circuit__num_measurements(Circuit self);
+  //         stim.Circuit.num_observables
+  uint32_t circuit__num_observables(Circuit self);
+  //         stim.Circuit.num_qubits
+  uint32_t circuit__num_qubits(Circuit self);
+  //         stim.Circuit.num_sweep_bits
+  uint32_t circuit__num_sweep_bits(Circuit self);
+  //         stim.Circuit.num_ticks
+  uint32_t circuit__num_ticks(Circuit self);
 //         stim.Circuit.reference_sample
+  core::T_sp circuit__reference_sample(Circuit self, bool bit_packed);
 //         stim.Circuit.search_for_undetectable_logical_errors
+  std::vector<ExplainedError> circuit__search_for_undetectable_logical_errors(Circuit self,
+                                                                              uint32_t a, uint32_t b,
+                                                                              bool c, bool d);
 //         stim.Circuit.shortest_error_sat_problem
+  std::string circuit__shortest_error_sat_problem_dimacs(Circuit self);
 //         stim.Circuit.shortest_graphlike_error
+  std::vector<ExplainedError> circuit__shortest_graphlike_error(Circuit self, bool a, bool b);
 //         stim.Circuit.to_file
+  void circuit__to_file(Circuit self, std::string file);
 //         stim.Circuit.to_qasm
+  std::string circuit__to_qasm(Circuit self, uint32_t open_qasm_version, bool skip_dets_and_obs);
 //         stim.Circuit.to_tableau
+  Tableau<MAX_BITWORD_WIDTH> circuit__to_tableau(Circuit self, bool ignore_noise, bool ignore_measurement,
+                                                 bool ignore_reset);
 //         stim.Circuit.with_inlined_feedback
+  Circuit circuit__with_inlined_feedback(Circuit self);
 //         stim.Circuit.without_noise
+  Circuit circuit__without_noise(Circuit self);
 //     stim.CircuitErrorLocation
 //         stim.CircuitErrorLocation.__init__
-//         stim.CircuitErrorLocation.flipped_measurement
+  // Not sure if it merits a constructor, and the flipped_measurement argument isn't clear
+  //         stim.CircuitErrorLocation.flipped_measurement
+  bool circuit_error_location__flipped_measurement_p(CircuitErrorLocation self);
+  FlippedMeasurement circuit_error_location__flipped_measurement(CircuitErrorLocation self);
 //         stim.CircuitErrorLocation.flipped_pauli_product
+  std::vector<GateTargetWithCoords> circuit_error_location__flipped_pauli_product(CircuitErrorLocation self);
 //         stim.CircuitErrorLocation.instruction_targets
+  CircuitTargetsInsideInstruction circuit_error_location__instruction_targets(CircuitErrorLocation self);
 //         stim.CircuitErrorLocation.stack_frames
+  std::vector<CircuitErrorLocationStackFrame> circuit_error_location__stack_frames(CircuitErrorLocation self);
 //         stim.CircuitErrorLocation.tick_offset
+  uint32_t circuit_error_location__tick_offset(CircuitErrorLocation self);
 //     stim.CircuitErrorLocationStackFrame
 //         stim.CircuitErrorLocationStackFrame.__init__
+  CircuitErrorLocationStackFrame circuit_error_location_stack_frame__init(int instruction_offset,
+                                                                          int iteration_index,
+                                                                          int instruction_repetitions_arg);
 //         stim.CircuitErrorLocationStackFrame.instruction_offset
-//         stim.CircuitErrorLocationStackFrame.instruction_repetitions_arg
+  int circuit_error_location_stack_frame__offset(CircuitErrorLocationStackFrame frame);
+  //         stim.CircuitErrorLocationStackFrame.instruction_repetitions_arg
+  int circuit_error_location_stack_frame__repetitions_arg(CircuitErrorLocationStackFrame frame);
 //         stim.CircuitErrorLocationStackFrame.iteration_index
+  int circuit_error_location_stack_frame__iteration_index(CircuitErrorLocationStackFrame frame);
 //     stim.CircuitInstruction
 //         stim.CircuitInstruction.__eq__
 //         stim.CircuitInstruction.__init__
@@ -204,7 +246,16 @@ namespace clasp_stim {
 //         stim.CircuitTargetsInsideInstruction.targets_in_range
 //     stim.CompiledDemSampler
 //         stim.CompiledDemSampler.sample
+  core::T_sp compiled_dem_sampler__sample(CompiledDemSampler self, int shots, bool bit_packed, bool return_errors);
+  core::T_sp compiled_dem_sampler__sample_recorded_errors_to_replay(CompiledDemSampler self, int shots,
+                                                              bool bit_packed, bool return_errors,
+                                                              core::T_sp recorded_errors_to_replay);
 //         stim.CompiledDemSampler.sample_write
+  void compiled_dem_sampler__sample_write(CompiledDemSampler self, int shots,
+                                          std::string det_out_file, SampleFormat det_out_format,
+                                          std::string obs_out_file, SampleFormat obs_out_format,
+                                          std::string err_out_file, SampleFormat err_out_format,
+                                          std::string replay_err_out_file, SampleFormat replay_err_out_format);
 //     stim.CompiledDetectorSampler
 //         stim.CompiledDetectorSampler.__init__
 //         stim.CompiledDetectorSampler.__repr__
@@ -533,34 +584,34 @@ namespace clasp_stim {
 //       {"OBSERVABLE-INCLUDE",GateType::OBSERVABLE_INCLUDE}}
 #define UNWRAP(...) __VA_ARGS__
 
-#define CLBIND_EXPOSE_MACRO(_ENUM_TYPE_, _KV_ ) \
-namespace translate \
-{ \
-  template <> \
-    struct to_object<_ENUM_TYPE_> \
-  { \
-    static core::T_sp convert(_ENUM_TYPE_ arg)                          \
-    {  std::map<std::string, _ENUM_TYPE_> kv UNWRAP _KV_;        \
-      std::map<_ENUM_TYPE_,std::string> vk=clasp_stim::reverse_map(kv); \
-      return core::lisp_intern(vk[arg],"KEYWORD"); \
-    } \
-  }; \
-  template <> \
-  struct from_object<_ENUM_TYPE_>               \
-  { \
-    typedef _ENUM_TYPE_ DeclareType;            \
-    DeclareType _v; \
-    from_object(core::T_sp obj) \
-    { \
-      if(cl__keywordp(obj)){ \
-        core::Symbol_sp s = obj.asOrNull<core::Symbol_O>(); \
-        std::string name = s->_Name->get_std_string(); \
-        std::map<std::string, _ENUM_TYPE_> kv UNWRAP _KV_; \
-        if(kv.count(name)) \
-        this->_v= kv[name]; \
-        else SIMPLE_ERROR("key not found");     \
-      } \
-      else TYPE_ERROR(obj,cl::_sym_Symbol_O); \
-    } \
-  }; \
-}; \
+#define CLBIND_EXPOSE_MACRO(_ENUM_TYPE_, _KV_ )                         \
+  namespace translate                                                   \
+  {                                                                     \
+   template <>                                                          \
+    struct to_object<_ENUM_TYPE_>                                       \
+    {                                                                   \
+      static core::T_sp convert(_ENUM_TYPE_ arg)                        \
+      {  std::map<std::string, _ENUM_TYPE_> kv UNWRAP _KV_;             \
+        auto vk=clasp_stim::reverse_map(kv);                            \
+        return core::lisp_intern(vk[arg],"KEYWORD");                    \
+      }                                                                 \
+    };                                                                  \
+    template <>                                                         \
+    struct from_object<_ENUM_TYPE_>                                     \
+    {                                                                   \
+      typedef _ENUM_TYPE_ DeclareType;                                  \
+      DeclareType _v;                                                   \
+      from_object(core::T_sp obj)                                       \
+      {                                                                 \
+        if(cl__keywordp(obj)){                                          \
+          core::Symbol_sp s = obj.asOrNull<core::Symbol_O>();           \
+          std::string name = s->_Name->get_std_string();                \
+          std::map<std::string, _ENUM_TYPE_> kv UNWRAP _KV_;            \
+          if(kv.count(name))                                            \
+            this->_v= kv[name];                                         \
+          else SIMPLE_ERROR("key not found");                           \
+        }                                                               \
+        else TYPE_ERROR(obj,cl::_sym_Symbol_O);                         \
+      }                                                                 \
+    };                                                                  \
+  };                                                                    \
