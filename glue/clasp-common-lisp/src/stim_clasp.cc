@@ -204,4 +204,9 @@ CLBIND_EXPOSE_MACRO(stim::GateType,({{"NOT-A-GATE", GateType::NOT_A_GATE},
 
 CLBIND_EXPOSE_MACRO(stim::GateFlags,({{"GATE-UNITARY-P",GateFlags::GATE_IS_UNITARY}}));
 
-
+CLBIND_EXPOSE_MACRO(stim::SampleFormat,({{"01",SampleFormat::SAMPLE_FORMAT_01},
+                                         {"B8",SampleFormat::SAMPLE_FORMAT_B8},
+                                         {"PTB64",SampleFormat::SAMPLE_FORMAT_PTB64},
+                                         {"HITS",SampleFormat::SAMPLE_FORMAT_HITS},
+                                         {"R8",SampleFormat::SAMPLE_FORMAT_R8},
+                                         {"DETS",SampleFormat::SAMPLE_FORMAT_DETS}}));
