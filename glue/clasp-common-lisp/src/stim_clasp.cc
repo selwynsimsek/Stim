@@ -1,212 +1,181 @@
-// Clasp bindings for Stim.
-
 #include <fmt/format.h>
 #include <clasp/clasp.h>
 #include "stim.h"
-#include "stim_clbind.h"
 
-PACKAGE_USE("COMMON-LISP");
+using namespace stim;
 
-NAMESPACE_PACKAGE_ASSOCIATION(clasp_stim, ClaspStimPkg, "STIM");
+namespace clasp_stim {
+  void stim__gate_data() {}
+  void stim__target_separator() {}
+  void stim__target_relative_detector_id() {}
+  void stim__target_logical_observable_id() {}
 
-//CLBIND_TRANSLATE_SYMBOL_TO_ENUM(stim::SampleFormat, clasp_stim::_sym_STARsampleFormatTranslatorSTAR );
-
-namespace clasp_stim{
-  template<typename K, typename V>
-  map<V, K> reverse_map(const map<K, V>& m) {
-    map<V, K> r;
-    for (const auto& kv : m)
-      r[kv.second] = kv.first;
-    return r;
+  int stim__main(const std::vector<std::string> args){ // adapted from stim.pybind.cc
+    std::vector<const char *> argv;
+    argv.push_back("stim.main");
+    for (const auto &arg : args) {
+      argv.push_back(arg.c_str());
+    }
+    return main(argv.size(), argv.data());
   }
-stim::GateType enum_test(GateFlags type){
-    return stim::GateType::OBSERVABLE_INCLUDE;
+
+  GateTarget stim__target_rec(int32_t lookback){
+    return GateTarget::rec(lookback);
   }
-  core::T_sp test(int a,core::MDArray_sp b)
-  {
-    if(a%2)
-    return core__make_mdarray(nil<core::T_O>(),ext::_sym_integer32);
-    else return nil<core::T_O>();
+  GateTarget stim__target_inv_target(const GateTarget &qubit){
+    return !qubit;
   }
-  extern "C" void startup_clasp_extension() {
-    using namespace clbind;
-    using namespace stim;
-    fmt::print("Entered {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
-    package_ s(ClaspStimPkg);
-    s.def("test",&test);
-    s.def("enum-test",&enum_test);
-    // We imitate the API laid out in src/stim/py/ystim.pybind.cc.
-    // Not everything will be possible or useful to port, but most of it will.
-    // We proceed by porting the module exposing code in order, on line 573 starting
-    // PYBIND11_MODULE(STIM_PYBIND11_MODULE_NAME, m) {.
-    // Parts of comments within square brackets are intended to illustrate the equivalent part of pybind that is being ported.
-
-    // With pybind, classes are registered before functions/methods. This is not necessary with clbind.
-
-    // We start by doing the top level function definitions:
-
-    // 'Module-level' methods [start top_level(m)]
-    // TODO Add comments. more complicated lambda list with optional parameter for 'invert'?
-    s.def("target-rec",&target_rec);
-    s.def("target-inverse-target",&target_inv_target);
-    s.def("target-inverse-integer",&target_inv_uint32_t);
-    s.def("target-combiner",&stim::GateTarget::combiner);
-    s.def("target-x-target",&target_x_target);
-    s.def("target-x-integer",&target_x_uint32_t);
-    s.def("target-y-target",&target_y_target);
-    s.def("target-y-integer",&target_y_uint32_t);
-    s.def("target-z-target",&target_z_target);
-    s.def("target-z-integer",&target_z_uint32_t);
-    s.def("target-pauli-string",&target_pauli_string);
-    s.def("target-pauli-integer",&target_pauli_uint8_t);
-    s.def("target-combined-paulis-string",&target_combined_paulis_string);
-    s.def("target-combined-paulis-gate-targets",&target_combined_paulis_gate_targets);
-    s.def("target-sweep-bit",&target_sweep_bit);
-    s.def("main",&stim_main);
-    // [end top_level]
-
-    // pybind_read_write would also be exposed. But there is no use in porting its two methods to Common Lisp.
-
-    // We start by exposing all the classes that are not in the pybind namespace (it would be problematic to build with pybind and we ultimately don't need it.)
-    // It is intended (TODO) that those classes which are in the pybind namespace will be themselves ported to clbind and exposed here. There are nine of them.
-    // [start class definitions]
-    // TODO Add methods
-    class_<DemSampler<MAX_BITWORD_WIDTH>>(s,"compiled-dem-sampler");
-    // TODO compiled detector sampler (python)
-    //class_<CompiledDetectorSampler>(s,"compiled-detector-sampler");
-    // TODO compiled measurement sampler (python)
-    //class_<CompiledMeasurementSampler>(s,"compiled-detector-sampler");
-    // TODO _compiled_m2d_converter (python)
-    // pauli_string
-    class_<FlexPauliString>(s,"pauli-string")
-      .def_constructor("make-pauli-string",constructor<uint32_t>()) // TODO fix size_t
-      .def("pauli-string-str",&FlexPauliString::str)
-      .def("pauli-string-phase",&FlexPauliString::get_phase)
-      .def("pauli-string+",&FlexPauliString::operator+)
-      .def("pauli-string+=",&FlexPauliString::operator+=) // TODO Fix exposing of overloaded methods
-      //.def("flex-pauli-string*-complex",(FlexPauliString(*)(std::complex<float>)) &FlexPauliString::operator*)
-      //.def("flex-pauli-string*-flex-pauli-string",(FlexPauliString(*)(FlexPauliString&))&FlexPauliString::operator)
-      .def("pauli-string/",&FlexPauliString::operator/)
-      //.def("flex-pauli-string*=-complex",(FlexPauliString(*)(std::complex<float>))&FlexPauliString::operator*=)
-      //.def("flex-pauli-string*=-flex-pauli-string",(FlexPauliString(*)(FlexPauliString&))&FlexPauliString::operator*=)
-      .def("pauli-string/=",&FlexPauliString::operator/=)
-      .def("pauli-string-equal-p",&FlexPauliString::operator==)
-      .def("pauli-string-not-equal-p",&FlexPauliString::operator!=);
-    s.def("pauli-string-from-text",&flex_pauli_from_text);
-
-    // PauliStringIterator
-     class_<PauliStringIterator<MAX_BITWORD_WIDTH>>(s,"pauli-string-iterator")
-        .def_constructor("make-pauli-string-iterator",constructor<uint32_t,uint32_t,uint32_t,bool, bool, bool>())
-      .def("pauli-string-iterator-next",&PauliStringIterator<MAX_BITWORD_WIDTH>::iter_next);
-     s.def("pauli-string-iterator-current",&pauli_iterator_get_current);
-
-     // Tableau
-     class_<Tableau<MAX_BITWORD_WIDTH>>(s,"tableau")
-       .def_constructor("make-tableau",constructor<uint32_t>())
-       .def("tableau-str",&Tableau<MAX_BITWORD_WIDTH>::str)
-       .def("tableau-then",&Tableau<MAX_BITWORD_WIDTH>::then)
-       .def("tableau-inverse",&Tableau<MAX_BITWORD_WIDTH>::inverse)
-       ;
-     // TableauIterator
-     class_<TableauIterator<MAX_BITWORD_WIDTH>>(s,"tableau-iterator")
-       ;
-    // circuit_gate_target
-     class_<GateTarget>(s,"gate-target")
-       .def("rec-offset",&GateTarget::rec_offset)
-       .def("has-qubit-value-p",&GateTarget::has_qubit_value)
-       .def("combiner-p",&GateTarget::is_combiner)
-       .def("x-target-p",&GateTarget::is_x_target)
-       .def("y-target-p",&GateTarget::is_y_target)
-       .def("z-target-p",&GateTarget::is_z_target)
-       .def("inverted-result-target-p",&GateTarget::is_inverted_result_target)
-       .def("measurement-record-target-p",&GateTarget::is_measurement_record_target)
-       .def("qubit-target-p",&GateTarget::is_qubit_target)
-       .def("sweep-bit-target-p",&GateTarget::is_sweep_bit_target)
-       .def("classical-bit-target-p",&GateTarget::is_classical_bit_target)
-       .def("pauli-target-p",&GateTarget::is_pauli_target)
-       .def("gate-target-qubit-value",&GateTarget::qubit_value)
-       .def("gate-target-value",&GateTarget::value)
-       .def("gate-target-equal-p",&GateTarget::operator==)
-       .def("gate-target-not-equal-p",&GateTarget::operator!=)
-       .def("gate-target-<",&GateTarget::operator<)
-       .def("gate-target-str",&GateTarget::str)
-       .def("gate-target-repr",&GateTarget::repr)
-       .def("gate-target-pauli-type",&GateTarget::pauli_type)
-       .def("target-str",&GateTarget::target_str);
-     s.def("gate-target-from-string",&gate_target_from_target_str);
-     fmt::print("Exited {}:{}:{}\n", __FILE__, __LINE__, __FUNCTION__);
-      // GateData
-     class_<Gate>(s,"gate")
-       ;
-      // CircuitInstruction (python)
-      // CircuitRepeatBlock (python)
-      // Circuit
-     class_<Circuit>(s,"circuit")
-       .def_constructor("make-circuit",constructor<>(),"")
-       .def_constructor("make-circuit-from-description",constructor<std::string>(),"")
-       .def("circuit-string",&Circuit::str)
-       .def("compute-stats",&Circuit::compute_stats)
-       .def("append-from-file",&Circuit::append_from_file)
-       .def("append-from-text",&Circuit::append_from_text)
-       .def("clear",&Circuit::clear)
-       ;
-       // ExposedDemInstruction (python)
-       // ExposedDemTarget (python)
-       // ExposedDemRepeatBlock (python)
-       // DetectorErrorModel
-     class_<DetectorErrorModel>(s,"detector-error-model")
-       ;
-       // TableauSimulator
-     class_<TableauSimulator<MAX_BITWORD_WIDTH>>(s,"tableau-simulator")
-       ;
-       // FrameSimulator
-     class_<FrameSimulator<MAX_BITWORD_WIDTH>>(s,"frame-simulator")
-       ;
-
-       // CircuitErrorLocationStackFrame
-     class_<CircuitErrorLocationStackFrame>(s,"circuit-error-location-stack-frame")
-       ;
-       // GateTargetWithCoords
-     class_<GateTargetWithCoords>(s,"gate-target-with-coords")
-       ;
-       // dem_target_with_coords
-       class_<DemTargetWithCoords>(s,"dem-target-with-coords")
-         ;
-       // flipped_measurement
-       class_<FlippedMeasurement>(s,"flipped-measurement")
-         ;
-       // circuit_targets_inside_instruction
-       class_<CircuitTargetsInsideInstruction>(s,"circuit-targets-inside-instruction")
-         ;
-       // circuit_error_location
-       class_<CircuitErrorLocation>(s,"circuit-error-location")
-         ;
-       // circuit_error_location_methods
-       class_<ExplainedError>(s,"explained-error")
-         ;
-       // flow
-       class_<Flow<MAX_BITWORD_WIDTH>>(s,"flow")
-         ;
-       // diagram_helper (python)
-       //end [class definitions]
+  GateTarget stim__target_inv_uint32_t(const uint32_t &qubit){
+    return GateTarget::qubit(qubit, true);
   }
-}; // namespace clasp_stim
 
-// trnslate enums
+  GateTarget stim__target_x_target(const GateTarget &t, bool invert){
+    if (!t.is_qubit_target()) {
+      throw std::invalid_argument("result of stim.target_x(" + t.str() + ") is not defined");
+    }
+    return GateTarget::x(t.qubit_value(), t.is_inverted_result_target() ^ invert);
+  }
+  GateTarget stim__target_x_uint32_t(const uint32_t &qubit, bool invert){
+    return GateTarget::x(qubit, invert);
+  }
 
-CLBIND_EXPOSE_MACRO(stim::GateType,({{"NOT-A-GATE", GateType::NOT_A_GATE},
-                                     {"DETECTOR",GateType::DETECTOR},
-                                     {"OBSERVABLE-INCLUDE",GateType::OBSERVABLE_INCLUDE},
-                                     {"TICK",GateType::TICK},
-                                     {"QUBIT-COORDINATES",GateType::QUBIT_COORDS},
-                                     {"SHIFT-COORDINATES",GateType::SHIFT_COORDS},
-                                     {"REPEAT",GateType::REPEAT}}));
+  GateTarget stim__target_y_target(const GateTarget &t, bool invert){
+    if (!t.is_qubit_target()) {
+      throw std::invalid_argument("result of stim.target_x(" + t.str() + ") is not defined");
+    }
+    return GateTarget::y(t.qubit_value(), t.is_inverted_result_target() ^ invert);
+  }
+  GateTarget stim__target_y_uint32_t(const uint32_t &qubit, bool invert){
+    return GateTarget::y(qubit, invert);
+  }
 
-CLBIND_EXPOSE_MACRO(stim::GateFlags,({{"GATE-UNITARY-P",GateFlags::GATE_IS_UNITARY}}));
+  GateTarget stim__target_z_target(const GateTarget &t, bool invert){
+    if (!t.is_qubit_target()) {
+      throw std::invalid_argument("result of stim.target_x(" + t.str() + ") is not defined");
+    }
+    return GateTarget::z(t.qubit_value(), t.is_inverted_result_target() ^ invert);
+  }
+  GateTarget stim__target_z_uint32_t(const uint32_t &qubit, bool invert){
+    return GateTarget::z(qubit, invert);
+  }
+  std::vector<GateTarget> stim__target_combined_paulis_gate_targets(std::vector<GateTarget> &paulis, bool invert){
+    std::vector<GateTarget> result;
+    for (GateTarget &g : paulis) {
+        if (g.pauli_type() != 'I') {
+          if (g.is_inverted_result_target()) {
+            invert ^= true;
+            g.data ^= TARGET_INVERTED_BIT;
+          }
+          result.push_back(g);
+          result.push_back(GateTarget::combiner());
+          continue;
+        }
 
-CLBIND_EXPOSE_MACRO(stim::SampleFormat,({{"01",SampleFormat::SAMPLE_FORMAT_01},
-                                         {"B8",SampleFormat::SAMPLE_FORMAT_B8},
-                                         {"PTB64",SampleFormat::SAMPLE_FORMAT_PTB64},
-                                         {"HITS",SampleFormat::SAMPLE_FORMAT_HITS},
-                                         {"R8",SampleFormat::SAMPLE_FORMAT_R8},
-                                         {"DETS",SampleFormat::SAMPLE_FORMAT_DETS}}));
+      std::stringstream ss;
+      ss << "Expected a pauli string or iterable of stim.GateTarget but got this when iterating: ";
+      ss << g;
+      throw std::invalid_argument(ss.str());
+    }
+
+    if (result.empty()) {
+      std::stringstream ss;
+      ss << "Identity pauli product: paulis=";
+      for(GateTarget &g: paulis)
+        ss << g.str();
+      throw std::invalid_argument(ss.str());
+    }
+    result.pop_back();
+    if (invert) {
+      result[0].data ^= TARGET_INVERTED_BIT;
+    }
+    return result;
+  }
+
+  std::vector<GateTarget> stim__target_combined_paulis_string(const FlexPauliString &ps, bool invert){
+    std::vector<GateTarget> result;
+    if (ps.imag) {
+      std::stringstream ss;
+      ss << "Imaginary sign: paulis=";
+      ss << ps.str();
+      throw std::invalid_argument(ss.str());
+    }
+    invert ^= ps.value.sign;
+    for (size_t q = 0; q < ps.value.num_qubits; q++) {
+      bool x = ps.value.xs[q];
+      bool z = ps.value.zs[q];
+      if (x | z) {
+        result.push_back(GateTarget::pauli_xz(q, x, z));
+        result.push_back(GateTarget::combiner());
+      }
+    }
+
+    if (result.empty()) {
+      std::stringstream ss;
+      ss << "Identity pauli product: paulis=";
+      ss << ps;
+      throw std::invalid_argument(ss.str());
+    }
+    result.pop_back();
+    if (invert) {
+      result[0].data ^= TARGET_INVERTED_BIT;
+    }
+    return result;
+  }
+  GateTarget stim__target_pauli_string(uint32_t qubit_index, const std::string &p, bool invert){
+    if ((qubit_index & TARGET_VALUE_MASK) != qubit_index) {
+      std::stringstream ss;
+      ss << "qubit_index=" << qubit_index << " is too large. Maximum qubit index is " << TARGET_VALUE_MASK << ".";
+      throw std::invalid_argument(ss.str());
+    }
+    if (p == "X" || p == "x") {
+      return GateTarget::x(qubit_index, invert);
+    } else if (p == "Y" || p == "y") {
+      return GateTarget::y(qubit_index, invert);
+    } else if (p == "Z" || p == "z") {
+      return GateTarget::z(qubit_index, invert);
+    } else if (p == "I") {
+      return GateTarget::qubit(qubit_index, invert);
+    }
+
+    std::stringstream ss;
+    ss << "Expected pauli in [0, 1, 2, 3, *'IXYZxyz'] but got pauli=" << p;
+    throw std::invalid_argument(ss.str());
+  }
+  GateTarget stim__target_pauli_uint8_t(uint32_t qubit_index, const uint8_t &p, bool invert){
+    if ((qubit_index & TARGET_VALUE_MASK) != qubit_index) {
+      std::stringstream ss;
+      ss << "qubit_index=" << qubit_index << " is too large. Maximum qubit index is " << TARGET_VALUE_MASK << ".";
+      throw std::invalid_argument(ss.str());
+    }
+    if (p == 1) {
+      return GateTarget::x(qubit_index, invert);
+    } else if (p == 2) {
+      return GateTarget::y(qubit_index, invert);
+    } else if (p == 3) {
+      return GateTarget::z(qubit_index, invert);
+    } else if (p == 0) {
+      return GateTarget::qubit(qubit_index, invert);
+    }
+
+    std::stringstream ss;
+    ss << "Expected pauli in [0, 1, 2, 3, *'IXYZxyz'] but got pauli=" << p;
+    throw std::invalid_argument(ss.str());
+  }
+  GateTarget stim__target_sweep_bit(uint32_t qubit){
+    return GateTarget::sweep_bit(qubit);
+  }
+  GateTarget stim__gate_target_from_target_str(std::string v){
+    return GateTarget::from_target_str(v);
+  }
+  FlexPauliString flex_pauli_from_text(std::string v){
+    return FlexPauliString::from_text(v);
+  }
+  FlexPauliString pauli_iterator_get_current(const PauliStringIterator<MAX_BITWORD_WIDTH> iterator){
+    //& doesn't work?
+    FlexPauliString result(iterator.num_qubits);// TODO work out why FlexPauliString constructor doesnt work
+    result.value=iterator.result;
+    result.imag=false;
+    return result;
+  }
+
+}

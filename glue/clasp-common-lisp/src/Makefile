@@ -9,11 +9,11 @@ else
 	LIBFLAGS=-shared
 endif
 
-objects = stim_clasp.o stim_clbind.o translators.o
+objects = stim_clasp.o stim_clbind.o translators.o enums.o
 
 all: libstimclasp.so
 
-$(objects): %.o: %.cc stim_clbind.h
+$(objects): %.o: %.cc stim_clasp.h
 	clang++ -static -c -I../../../src -fPIC ${CFLAGS} $<
 
 libstimclasp.so: ${objects}

@@ -20,37 +20,69 @@
 using namespace stim;
 
 namespace clasp_stim {
-  class CircuitOperation {};
-  class CompiledM2DConverter {};
-  class CompiledDemSampler {};
+  // classes that are defined in the pybind namespace and need to be recreated here
+  class CircuitRepeatBlock {};
   class CompiledDetectorSampler {};
   class CompiledMeasurementSampler {};
-  class CompiledM2DSampler {};
-  class CircuitInstruction {};
-  class CircuitRepeatBlock {};
+  class CompiledMeasurementsToDetectionEventsConverter {};
+
   class ExposedDemInstruction {};
-    class ExposedDemTarget {};
+  class ExposedDemTarget {};
   class ExposedDemRepeatBlock {};
-    class DiagramHelper {};
+
+  class DiagramHelper {};
+
+  // Typedefs for making clbind more convenient to use.
+  typedef Circuit clbind_Circuit; // stim/circuit/circuit.h
+  typedef CircuitErrorLocation clbind_CircuitErrorLocation; // stim/simulators/matched_error.h
+  typedef CircuitErrorLocationStackFrame clbind_CircuitErrorLocationStackFrame; // stim/simulators/matched_error.h
+  typedef CircuitInstruction clbind_CircuitInstruction; // stim/circuit/circuit_instruction.h
+  typedef CircuitRepeatBlock clbind_CircuitRepeatBlock; // above (original in stim/circuit/circuit_repeat_block.pybind.h)
+  typedef CircuitTargetsInsideInstruction clbind_CircuitTargetsInsideInstruction; // stim/simulators/matched_error.h
+  typedef DemSampler<MAX_BITWORD_WIDTH> clbind_CompiledDemSampler; // stim/simulators/dem_sampler.h
+  typedef CompiledDetectorSampler clbind_CompiledDetectorSampler; // above (original in stim/py/compiled_detector_sampler.pybind.h)
+  typedef CompiledMeasurementSampler clbind_CompiledMeasurementSampler; // above (original in stim/py/compiled_measurement_sampler.pybind.h)
+  typedef CompiledMeasurementsToDetectionEventsConverter clbind_CompiledMeasurementsToDetectionEventsConverter; // above (original in stim/simulators/measurements_to_detection_events.pybind.h)
+  typedef ExposedDemInstruction  clbind_DemInstruction; // above (original in stim/dem/dem_instruction.pybind.h)
+  typedef ExposedDemRepeatBlock  clbind_DemRepeatBlock; // above (original in stim/dem/detector_error_model_repeat_block.pybind.h)
+  typedef ExposedDemTarget clbind_DemTarget; // above (original in stim/dem/detector_error_model_target.pybind.h)
+  typedef DemTargetWithCoords clbind_DemTargetWithCoords; // stim/simulators/matched_error.h
+  typedef DetectorErrorModel clbind_DetectorErrorModel; // stim/dem/dem_instruction.h
+  typedef ExplainedError clbind_ExplainedError; // stim/simulators/matched_error.h
+  typedef FrameSimulator<MAX_BITWORD_WIDTH> clbind_FlipSimulator; // stim/simulators/frame_simulator.h
+  typedef FlippedMeasurement clbind_FlippedMeasurement; // stim/simulators/matched_error.h
+  typedef Flow<MAX_BITWORD_WIDTH> clbind_Flow; // stim/gates/gates.h
+  typedef Gate clbind_GateData; // stim/gates/gates.h
+  typedef GateTarget clbind_GateTarget; // stim/circuit/gate_target.h
+  typedef GateTargetWithCoords clbind_GateTargetWithCoords; // stim/simulators/matched_error.h
+  typedef FlexPauliString clbind_PauliString; // stim/stabilizers/flex_pauli_string.h
+  typedef PauliStringIterator<MAX_BITWORD_WIDTH> clbind_PauliStringIterator; // stim/stabilizers/pauli_string_iter.h
+  typedef Tableau<MAX_BITWORD_WIDTH> clbind_Tableau; // stim/stabilizers/tableau.h
+  typedef TableauIterator<MAX_BITWORD_WIDTH> clbind_TableauIterator; // stim/stabilizers/tableau_iter.h
+  typedef TableauSimulator<MAX_BITWORD_WIDTH> clbind_TableauSimulator; // stim/simulators/tableau_simulator.h
+  typedef DiagramHelper clbind_DiagramHelper; // above (original in stim/cmd/command_diagram.pybind.h)
 
   template<typename K, typename V> std::map<V, K> reverse_map(const std::map<K, V>& m);
-  int stim_main(const std::vector<std::string> args);
-  GateTarget target_rec(int32_t lookback);
-  GateTarget target_inv_target(const GateTarget &qubit);
-  GateTarget target_inv_uint32_t(const uint32_t &qubit);
-  GateTarget target_x_target(const GateTarget &qubit, bool invert);
-  GateTarget target_x_uint32_t(const uint32_t &qubit, bool invert);
-  GateTarget target_y_target(const GateTarget &qubit, bool invert);
-  GateTarget target_y_uint32_t(const uint32_t &qubit, bool invert);
-  GateTarget target_z_target(const GateTarget &qubit, bool invert);
-  GateTarget target_z_uint32_t(const uint32_t &qubit, bool invert);
-  std::vector<GateTarget> target_combined_paulis_gate_targets(std::vector<GateTarget> &paulis, bool invert);
-  std::vector<GateTarget> target_combined_paulis_string(const FlexPauliString &paulis, bool invert);
-  GateTarget target_pauli_string(uint32_t qubit_index, const std::string &pauli, bool invert);
-  GateTarget target_pauli_uint8_t(uint32_t qubit_index, const uint8_t &pauli, bool invert);
-  GateTarget target_sweep_bit(uint32_t qubit);
-
-  GateTarget gate_target_from_target_str(std::string v);
+  void stim__gate_data();
+  int stim__main(const std::vector<std::string> args);
+  GateTarget stim__target_rec(int32_t lookback);
+  GateTarget stim__target_inv_target(const GateTarget &qubit);
+  GateTarget stim__target_inv_uint32_t(const uint32_t &qubit);
+  GateTarget stim__target_x_target(const GateTarget &qubit, bool invert);
+  GateTarget stim__target_x_uint32_t(const uint32_t &qubit, bool invert);
+  GateTarget stim__target_y_target(const GateTarget &qubit, bool invert);
+  GateTarget stim__target_y_uint32_t(const uint32_t &qubit, bool invert);
+  GateTarget stim__target_z_target(const GateTarget &qubit, bool invert);
+  GateTarget stim__target_z_uint32_t(const uint32_t &qubit, bool invert);
+  std::vector<GateTarget> stim__target_combined_paulis_gate_targets(std::vector<GateTarget> &paulis, bool invert);
+  std::vector<GateTarget> stim__target_combined_paulis_string(const FlexPauliString &paulis, bool invert);
+  GateTarget stim__target_pauli_string(uint32_t qubit_index, const std::string &pauli, bool invert);
+  GateTarget stim__target_pauli_uint8_t(uint32_t qubit_index, const uint8_t &pauli, bool invert);
+  GateTarget stim__target_sweep_bit(uint32_t qubit);
+  void stim__target_separator();
+  void stim__target_relative_detector_id();
+  void stim__target_logical_observable_id();
+  GateTarget stim__gate_target_from_target_str(std::string v);
   FlexPauliString flex_pauli_from_text(std::string v);
   FlexPauliString pauli_iterator_get_current(const PauliStringIterator<MAX_BITWORD_WIDTH> iterator);
 
@@ -86,8 +118,8 @@ namespace clasp_stim {
 //         stim.Circuit.append
   void circuit__append_int_array(Circuit &self, std::string name, std::vector<int> targets, std::vector<double> arg);
   void circuit__append_gate_target_array(Circuit &self, std::string name, std::vector<GateTarget> targets, std::vector<double> arg);
-  void circuit__append_circuit_operation(Circuit &self, CircuitOperation operation);
-  void circuit__append_circuit_repeat_block(Circuit &self, CircuitRepeatBlock repeat_block);
+  void circuit__append_circuit_instruction(Circuit &self, clbind_CircuitInstruction operation); // changed from operation
+  void circuit__append_circuit_repeat_block(Circuit &self, clbind_CircuitRepeatBlock repeat_block);
 //         stim.Circuit.append_from_stim_program_text
   void circuit__append_from_stim_program_text(Circuit &self, std::string stim_program_text);
 //         stim.Circuit.approx_equals
@@ -95,15 +127,15 @@ namespace clasp_stim {
 //         stim.Circuit.clear
   void circuit__clear(Circuit &self);
   //         stim.Circuit.compile_detector_sampler
-  CompiledDetectorSampler circuit__compile_detector_sampler(Circuit &self);
-  CompiledDetectorSampler circuit__compile_detector_sampler_seed(Circuit &self,uint32_t seed);
+  clbind_CompiledDetectorSampler circuit__compile_detector_sampler(Circuit &self);
+  clbind_CompiledDetectorSampler circuit__compile_detector_sampler_seed(Circuit &self,uint32_t seed);
 //         stim.Circuit.compile_m2d_converter
-  CompiledM2DConverter circuit__compile_m2d_converter(Circuit &self, bool skip_reference_sample);
+  clbind_CompiledMeasurementsToDetectionEventsConverter circuit__compile_m2d_converter(Circuit &self, bool skip_reference_sample);
   //         stim.Circuit.compile_sampler
-  CompiledMeasurementSampler circuit__compile_sampler(Circuit &self, bool skip_reference_sample);
-  CompiledMeasurementSampler circuit__compile_sampler_seed(Circuit &self, bool skip_reference_sample,uint32_t seedn);
-  CompiledMeasurementSampler circuit__compile_sampler_reference_sample(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample);
-  CompiledMeasurementSampler circuit__compile_sampler_reference_sample_seed(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample,uint32_t seed);
+  clbind_CompiledMeasurementSampler circuit__compile_sampler(Circuit &self, bool skip_reference_sample);
+  clbind_CompiledMeasurementSampler circuit__compile_sampler_seed(Circuit &self, bool skip_reference_sample,uint32_t seedn);
+  clbind_CompiledMeasurementSampler circuit__compile_sampler_reference_sample(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample);
+  clbind_CompiledMeasurementSampler circuit__compile_sampler_reference_sample_seed(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample,uint32_t seed);
 //         stim.Circuit.copy
   Circuit circuit__copy(Circuit &self);
 //         stim.Circuit.count_determined_measurements
@@ -120,33 +152,33 @@ namespace clasp_stim {
   core::T_sp circuit__detecting_regions_targets_floats_ticks(Circuit &self, std::vector<std::vector<float>> targets, std::vector<int> ticks);
   core::T_sp circuit__detecting_regions_ticks(Circuit &self, std::vector<int> ticks);
 //         stim.Circuit.detector_error_model
-  DetectorErrorModel circuit__detector_error_model(Circuit &self, bool decompose_errors, bool flatten_loops, bool allow_gauge_detectors, bool approximate_disjoint_errors, bool ignore_decomposition_failures, bool block_decomposition_from_introducting_remnant_edges);
+  clbind_DetectorErrorModel circuit__detector_error_model(Circuit &self, bool decompose_errors, bool flatten_loops, bool allow_gauge_detectors, bool approximate_disjoint_errors, bool ignore_decomposition_failures, bool block_decomposition_from_introducting_remnant_edges);
 //         stim.Circuit.diagram
-      DiagramHelper circuit__diagram_range_float(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_range_float(Circuit &self, std::string type,
                                                           uint32_t start, uint32_t stop, uint32_t range,
                                                           std::vector<std::vector<float>> filter_coords);
-  DiagramHelper circuit__diagram_range_dem_target(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_range_dem_target(Circuit &self, std::string type,
                                                                uint32_t start, uint32_t stop, uint32_t range,
                                                                std::vector<DemTarget> filter_coords);
-  DiagramHelper circuit__diagram_tick_float(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_tick_float(Circuit &self, std::string type,
                                                     uint32_t tick,
                                                     std::vector<std::vector<float>> filter_coords);
-  DiagramHelper circuit__diagram_tick_dem_target(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_tick_dem_target(Circuit &self, std::string type,
                                                           uint32_t tick,
                                                  std::vector<DemTarget> filter_coords);
-  DiagramHelper circuit__diagram_float(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_float(Circuit &self, std::string type,
                                             std::vector<std::vector<float>> filter_coords);
-  DiagramHelper circuit__diagram_dem_target(Circuit &self, std::string type,
+  clbind_DiagramHelper circuit__diagram_dem_target(Circuit &self, std::string type,
                                             std::vector<DemTarget> filter_coords);
-  DiagramHelper circuit__diagram(Circuit &self, std::string type);
+  clbind_DiagramHelper circuit__diagram(Circuit &self, std::string type);
 //         stim.Circuit.explain_detector_error_model_errors
-  std::vector<ExplainedError> circuit__explain_detector_error_model_errors(Circuit &self, DetectorErrorModel dem_filter, bool reduce_to_one_representative_error);
+  std::vector<clbind_ExplainedError> circuit__explain_detector_error_model_errors(Circuit &self, DetectorErrorModel dem_filter, bool reduce_to_one_representative_error);
 //         stim.Circuit.flattened
-  Circuit circuit__flattened(Circuit &self);
+  clbind_Circuit circuit__flattened(Circuit &self);
 //         stim.Circuit.from_file
-  Circuit circuit__from_file(std::string file);
+  clbind_Circuit circuit__from_file(std::string file);
 //         stim.Circuit.generated
-  Circuit circuit__generated(std::string code_task, uint32_t distance, uint32_t rounds,
+  clbind_Circuit circuit__generated(std::string code_task, uint32_t distance, uint32_t rounds,
                              float after_clifford_depolarization, float before_round_data_depolarization,
                              float before_measure_flip_probability, float after_reset_flip_probability);
   //         stim.Circuit.get_detector_coordinates
@@ -271,12 +303,12 @@ int circuit_targets_inside_instruction__target_range_start(CircuitTargetsInsideI
 std::vector<GateTargetWithCoords> circuit_targets_inside_instruction__targets_in_range(CircuitTargetsInsideInstruction self);
 //     stim.CompiledDemSampler
 //         stim.CompiledDemSampler.sample
-  core::T_sp compiled_dem_sampler__sample(CompiledDemSampler self, int shots, bool bit_packed, bool return_errors);
-  core::T_sp compiled_dem_sampler__sample_recorded_errors_to_replay(CompiledDemSampler self, int shots,
+  core::T_sp compiled_dem_sampler__sample(clbind_CompiledDemSampler self, int shots, bool bit_packed, bool return_errors);
+  core::T_sp compiled_dem_sampler__sample_recorded_errors_to_replay(clbind_CompiledDemSampler self, int shots,
                                                               bool bit_packed, bool return_errors,
                                                               core::T_sp recorded_errors_to_replay);
 //         stim.CompiledDemSampler.sample_write
-  void compiled_dem_sampler__sample_write(CompiledDemSampler self, int shots,
+  void compiled_dem_sampler__sample_write(clbind_CompiledDemSampler self, int shots,
                                           std::string det_out_file, SampleFormat det_out_format,
                                           std::string obs_out_file, SampleFormat obs_out_format,
                                           std::string err_out_file, SampleFormat err_out_format,
@@ -583,21 +615,7 @@ void TableauSimulator__z_error();
 void TableauSimulator__zcx();
 void TableauSimulator__zcy();
 void TableauSimulator__zcz();
-void gate_data();
-void main();
 // read_shot_data_file - doesn't make sense to expose
-void target_combined_paulis();
-void target_combiner();
-void target_inv();
-void target_logical_observable_id();
-void target_pauli();
-void target_rec();
-void target_relative_detector_id();
-void target_separator();
-void target_sweep_bit();
-void target_x();
-void target_y();
-void target_z();
 // write_shot_data_file - doesn't make sense to expose
 }
 
