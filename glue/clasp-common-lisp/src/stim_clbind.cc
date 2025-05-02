@@ -528,8 +528,8 @@ namespace translate
         {
           core::ComplexVector_T_sp vo = core::ComplexVector_T_O::make(val.size(), nil<core::T_O>());
           int i(0);
-          for (auto ai = val.begin(); ai != val.end(); ai++) {
-            vo->rowMajorAset(i++, core::DoubleFloat_O::create(*ai));
+          for (auto ai : val) {
+            vo->rowMajorAset(i++, core::DoubleFloat_O::create(ai));
           }
           core::Cons_sp cons = core::Cons_O::create(core::Integer_O::create(key),vo);
           return_list = core::Cons_O::create(cons, return_list);
