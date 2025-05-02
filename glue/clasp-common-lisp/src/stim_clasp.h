@@ -63,6 +63,8 @@ namespace clasp_stim {
   typedef DiagramHelper clbind_DiagramHelper; // above (original in stim/cmd/command_diagram.pybind.h)
 
   template<typename K, typename V> std::map<V, K> reverse_map(const std::map<K, V>& m);
+  // main methods (top level in the corresponding Python module)
+
   void stim__gate_data();
   int stim__main(const std::vector<std::string> args);
   GateTarget stim__target_rec(int32_t lookback);
@@ -657,3 +659,4 @@ void TableauSimulator__zcz();
       }                                                                 \
     };                                                                  \
   };                                                                    \
+
