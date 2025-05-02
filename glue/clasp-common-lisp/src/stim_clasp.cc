@@ -1,6 +1,7 @@
 #include <fmt/format.h>
 #include <clasp/clasp.h>
 #include "stim.h"
+#include "stim_clasp.h"
 
 using namespace stim;
 
@@ -183,16 +184,16 @@ namespace clasp_stim {
   bool circuit__eq(Circuit &self, Circuit &c2){return self == c2;}
 // core::T_sp circuit__getitem_uint32_t(Circuit &self,uint32_t index){}
 // Circuit circuit__getitem_slice(Circuit &self, uint32_t start, uint32_t stop, uint32_t step){}
-// void circuit__iadd(Circuit &self, Circuit &second){}
-// void circuit__imul(Circuit &self, uint32_t repetitions){}
+  void circuit__iadd(Circuit &self, Circuit &second){self += second;}
+  void circuit__imul(Circuit &self, uint32_t repetitions){self *= repetitions;}
   Circuit circuit__init(std::string program_text)
   {
     Circuit self;
     self.append_from_text(program_text);
     return self;
   }
-// uint32_t circuit__len(Circuit &self){}
-// Circuit circuit__mul(Circuit &self, uint32_t repetitions){}
+  uint32_t circuit__len(Circuit &self){return self.operations.size();}
+  Circuit circuit__mul(Circuit &self, uint32_t repetitions){return self * repetitions;}
   bool circuit__ne(Circuit &self, Circuit &c2){return self != c2;}
   std::string circuit__repr(Circuit &self){
     if (self.operations.empty()) {
@@ -205,11 +206,14 @@ namespace clasp_stim {
     return ss.str();}
   Circuit circuit__rmul(Circuit &self, uint32_t repetitions){return self * repetitions;}
   std::string circuit__str(Circuit &self){return self.str();}
-// void circuit__append_int_array(Circuit &self, std::string name, std::vector<int> targets, std::vector<double> arg){}
+  //void circuit__append_int_array(Circuit &self, std::string name, std::vector<uint32_t> targets, std::vector<double> arg) {}
 // void circuit__append_gate_target_array(Circuit &self, std::string name, std::vector<GateTarget> targets, std::vector<double> arg){}
 // void circuit__append_circuit_instruction(Circuit &self, clbind_CircuitInstruction operation){}
 // void circuit__append_circuit_repeat_block(Circuit &self, clbind_CircuitRepeatBlock repeat_block){}
-// void circuit__append_from_stim_program_text(Circuit &self, std::string stim_program_text){}
+ void circuit__append_from_stim_program_text(Circuit &self, std::string stim_program_text)
+ {
+   self.append_from_text(stim_program_text.c_str());
+ }
 // bool circuit__approx_equals(Circuit &self, Circuit &other, float atol){}
   void circuit__clear(Circuit &self){self.clear();}
 // clbind_CompiledDetectorSampler circuit__compile_detector_sampler(Circuit &self){}
@@ -219,7 +223,7 @@ namespace clasp_stim {
 // clbind_CompiledMeasurementSampler circuit__compile_sampler_seed(Circuit &self, bool skip_reference_sample,uint32_t seedn){}
 // clbind_CompiledMeasurementSampler circuit__compile_sampler_reference_sample(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample){}
 // clbind_CompiledMeasurementSampler circuit__compile_sampler_reference_sample_seed(Circuit &self, bool skip_reference_sample, core::Array_sp reference_sample,uint32_t seed){}
-// Circuit circuit__copy(Circuit &self){}
+  Circuit circuit__copy(Circuit &self){Circuit copy = self; return copy;}
 // uint32_t circuit__count_determined_measurements(Circuit &self){}
 // Circuit circuit__decomposed(Circuit &self){}
 // core::T_sp circuit__detecting_regions(Circuit &self){}
@@ -239,10 +243,48 @@ namespace clasp_stim {
 // std::vector<clbind_ExplainedError> circuit__explain_detector_error_model_errors(Circuit &self, DetectorErrorModel dem_filter, bool reduce_to_one_representative_error){}
 // clbind_Circuit circuit__flattened(Circuit &self){}
 // clbind_Circuit circuit__from_file(std::string file){}
-// clbind_Circuit circuit__generated(std::string code_task, uint32_t distance, uint32_t rounds,float after_clifford_depolarization, float before_round_data_depolarization,float before_measure_flip_probability, float after_reset_flip_probability){}
+ clbind_Circuit circuit__generated(std::string type, uint32_t distance, uint32_t rounds,float after_clifford_depolarization, float before_round_data_depolarization,float before_measure_flip_probability, float after_reset_flip_probability)
+ {
+   auto r = type.find(':');
+            std::string_view code;
+            std::string_view task;
+            if (r == std::string::npos) {
+                code = "";
+                task = type;
+            } else {
+                code = type.substr(0, r);
+                task = type.substr(r + 1);
+            }
+
+            CircuitGenParameters params(rounds, distance, std::string(task));
+            params.after_clifford_depolarization = after_clifford_depolarization;
+            params.after_reset_flip_probability = after_reset_flip_probability;
+            params.before_measure_flip_probability = before_measure_flip_probability;
+            params.before_round_data_depolarization = before_round_data_depolarization;
+            params.validate_params();
+
+            if (code == "surface_code") {
+                return generate_surface_code_circuit(params).circuit;
+            } else if (code == "repetition_code") {
+                return generate_rep_code_circuit(params).circuit;
+            } else if (code == "color_code") {
+                return generate_color_code_circuit(params).circuit;
+            } else {
+                SIMPLE_ERROR(
+                    "Unrecognized circuit type. Expected type to start with "
+                    "'surface_code:', 'repetition_code:', or 'color_code:'.");
+            }
+ }
 // core::T_sp circuit__get_detector_coordinates(Circuit self){}
 // core::T_sp circuit__get_detector_coordinates_only(Circuit self, std::vector<uint32_t> only){}
-// core::T_sp circuit__get_final_qubit_coordinates(Circuit self){}
+  std::map<uint32_t, std::vector<double>> circuit__get_final_qubit_coordinates(Circuit self){
+    std::map<uint32_t, std::vector<double>> m;
+    for (auto const& [key, val] : self.get_final_qubit_coords()){
+      m[key]=val;
+    }
+    return m;
+    //return dynamic_cast<std::map<uint32_t, std::vector<double>>>(self.get_final_qubit_coords());
+  }
 // bool circuit__has_all_flows(Circuit self, std::vector<Flow<MAX_BITWORD_WIDTH>> flows, bool unsigned_p){}
 // bool circuit__has_flow(Circuit self, Flow<MAX_BITWORD_WIDTH> flow, bool unsigned_p){}
 // Circuit circuit__inverse(Circuit self){}
@@ -586,3 +628,4 @@ namespace clasp_stim {
 // void TableauSimulator__zcz(){}
 
 }
+

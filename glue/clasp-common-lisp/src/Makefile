@@ -1,6 +1,8 @@
 CFLAGS=`pkg-config --cflags libclasp`
 LDFLAGS=`pkg-config --libs libclasp`
 
+MAKEFLAGS += -j8
+
 ifeq ($(UNAME_S),Darwin)
 	LIBEXT=dylib
 	LIBFLAGS=-dynamic

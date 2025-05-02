@@ -118,7 +118,7 @@ namespace clasp_stim {
 //         stim.Circuit.__str__
   std::string circuit__str(Circuit &self);
 //         stim.Circuit.append
-  void circuit__append_int_array(Circuit &self, std::string name, std::vector<int> targets, std::vector<double> arg);
+  void circuit__append_int_array(Circuit &self, std::string name, std::vector<uint32_t> targets, std::vector<double> arg);
   void circuit__append_gate_target_array(Circuit &self, std::string name, std::vector<GateTarget> targets, std::vector<double> arg);
   void circuit__append_circuit_instruction(Circuit &self, clbind_CircuitInstruction operation); // changed from operation
   void circuit__append_circuit_repeat_block(Circuit &self, clbind_CircuitRepeatBlock repeat_block);
@@ -187,7 +187,7 @@ namespace clasp_stim {
   core::T_sp circuit__get_detector_coordinates(Circuit self);
   core::T_sp circuit__get_detector_coordinates_only(Circuit self, std::vector<uint32_t> only);
 //         stim.Circuit.get_final_qubit_coordinates
-  core::T_sp circuit__get_final_qubit_coordinates(Circuit self);
+  std::map<uint32_t, std::vector<double>> circuit__get_final_qubit_coordinates(Circuit self);
 //         stim.Circuit.has_all_flows
   bool circuit__has_all_flows(Circuit self, std::vector<Flow<MAX_BITWORD_WIDTH>> flows, bool unsigned_p);
   //         stim.Circuit.has_flow

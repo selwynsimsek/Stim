@@ -92,11 +92,11 @@ namespace clasp_stim {
     s.def("circuit-eq",&circuit__eq);
 //s.def("circuit__getitem_uint32_t",&circuit__getitem_uint32_t);
 //s.def("circuit__getitem_slice",&circuit__getitem_slice);
-//s.def("circuit__iadd",&circuit__iadd);
-//s.def("circuit__imul",&circuit__imul);
+s.def("circuit-iadd",&circuit__iadd);
+s.def("circuit-imul",&circuit__imul);
 s.def("circuit-init",&circuit__init);
-//s.def("circuit__len",&circuit__len);
-//s.def("circuit__mul",&circuit__mul);
+s.def("circuit-len",&circuit__len);
+s.def("circuit-mul",&circuit__mul);
 s.def("circuit-ne",&circuit__ne);
 s.def("circuit-repr",&circuit__repr);
 s.def("circuit-rmul",&circuit__rmul);
@@ -105,7 +105,7 @@ s.def("circuit-str",&circuit__str);
 //s.def("circuit__append_gate_target_array",&circuit__append_gate_target_array);
 //s.def("circuit__append_circuit_instruction",&circuit__append_circuit_instruction);
 //s.def("circuit__append_circuit_repeat_block",&circuit__append_circuit_repeat_block);
-//s.def("circuit__append_from_stim_program_text",&circuit__append_from_stim_program_text);
+s.def("circuit__append_from_stim_program_text",&circuit__append_from_stim_program_text);
 //s.def("circuit__approx_equals",&circuit__approx_equals);
 s.def("circuit-clear",&circuit__clear);
 //s.def("circuit__compile_detector_sampler",&circuit__compile_detector_sampler);
@@ -115,7 +115,7 @@ s.def("circuit-clear",&circuit__clear);
 //s.def("circuit__compile_sampler_seed",&circuit__compile_sampler_seed);
 //s.def("circuit__compile_sampler_reference_sample",&circuit__compile_sampler_reference_sample);
 //s.def("circuit__compile_sampler_reference_sample_seed",&circuit__compile_sampler_reference_sample_seed);
-//s.def("circuit__copy",&circuit__copy);
+s.def("circuit-copy",&circuit__copy);
 //s.def("circuit__count_determined_measurements",&circuit__count_determined_measurements);
 //s.def("circuit__decomposed",&circuit__decomposed);
 //s.def("circuit__detecting_regions",&circuit__detecting_regions);
@@ -135,10 +135,10 @@ s.def("circuit-clear",&circuit__clear);
 //s.def("circuit__explain_detector_error_model_errors",&circuit__explain_detector_error_model_errors);
 //s.def("circuit__flattened",&circuit__flattened);
 //s.def("circuit__from_file",&circuit__from_file);
-//s.def("circuit__generated",&circuit__generated);
+s.def("circuit-generated",&circuit__generated);
 //s.def("circuit__get_detector_coordinates",&circuit__get_detector_coordinates);
 //s.def("circuit__get_detector_coordinates_only",&circuit__get_detector_coordinates_only);
-//s.def("circuit__get_final_qubit_coordinates",&circuit__get_final_qubit_coordinates);
+s.def("circuit-get-final-qubit-coordinates",&circuit__get_final_qubit_coordinates);
 //s.def("circuit__has_all_flows",&circuit__has_all_flows);
 //s.def("circuit__has_flow",&circuit__has_flow);
 //s.def("circuit__inverse",&circuit__inverse);
@@ -494,6 +494,8 @@ s.def("circuit-clear",&circuit__clear);
   }
 }; // namespace clasp_stim
 
+// enums
+
 CLBIND_EXPOSE_MACRO(stim::GateType,({{"NOT-A-GATE", GateType::NOT_A_GATE},
                                      {"DETECTOR",GateType::DETECTOR},
                                      {"OBSERVABLE-INCLUDE",GateType::OBSERVABLE_INCLUDE},
@@ -510,3 +512,44 @@ CLBIND_EXPOSE_MACRO(stim::SampleFormat,({{"01",SampleFormat::SAMPLE_FORMAT_01},
                                          {"HITS",SampleFormat::SAMPLE_FORMAT_HITS},
                                          {"R8",SampleFormat::SAMPLE_FORMAT_R8},
                                          {"DETS",SampleFormat::SAMPLE_FORMAT_DETS}}));
+
+// translators (why don't they work when put in a different file?)
+
+namespace translate
+{
+  template <>
+  struct to_object<std::map<uint32_t, std::vector<double>>>
+  {
+    static core::T_sp convert(std::map<uint32_t, std::vector<double>> arg)
+    {
+      core::Cons_sp return_list = nil<core::Cons_O>();
+      // TODO Actually do the translation
+      for (auto const& [key, val] : arg)
+        {
+          core::ComplexVector_T_sp vo = core::ComplexVector_T_O::make(val.size(), nil<core::T_O>());
+          int i(0);
+          for (auto ai = val.begin(); ai != val.end(); ai++) {
+            vo->rowMajorAset(i++, core::DoubleFloat_O::create(*ai));
+          }
+          core::Cons_sp cons = core::Cons_O::create(core::Integer_O::create(key),vo);
+          return_list = core::Cons_O::create(cons, return_list);
+        }
+      return return_list;
+    }
+  };
+};
+
+namespace translate
+{
+  template <>
+  struct from_object<std::map<uint32_t, std::vector<double>>>
+  {
+    typedef std::map<uint32_t, std::vector<double>> DeclareType;                             // (1)
+    DeclareType _v;
+    from_object(core::T_sp obj)
+    {
+      std::map<uint32_t, std::vector<double>> m;
+      this->_v=m;// (3)
+    }
+  };
+};
