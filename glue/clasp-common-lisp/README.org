@@ -1,10 +1,18 @@
-* Stim 
+* Stim
 Clasp Common Lisp bindings to Stim.
 ** Usage
+#+BEGIN_SRC bash
+  cd src/ && make run
+#+END_SRC
+to build and start a REPL with Stim as the current package.
+** Requirements
+clasp must already be installed on the system.
 
-** Installation
+Stim is expected to already have been built in build/ (under the project root).
 
+A LLVM toolchain is expected to be available.
+
+~llvm-config-17~ is used by default in the Makefile, you may want to change this if you want to use a different LLVM version (TODO change this behaviour to a more sensible default)
 ** Author
 
 + Selwyn Simsek (selwyn.simsek@cantab.net)
-
