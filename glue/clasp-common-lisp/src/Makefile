@@ -1,5 +1,9 @@
-CFLAGS=`pkg-config --cflags libclasp`
-LDFLAGS=`pkg-config --libs libclasp`
+CFLAGS=$(shell pkg-config --cflags libclasp)
+LDFLAGS=$(shell pkg-config --libs libclasp)
+
+CXXFLAGS=$(shell llvm-config-17 --cxxflags)
+
+CLANG=$(shell llvm-config-17 --bindir)/clang++
 
 MAKEFLAGS += -j8
 
@@ -16,10 +20,10 @@ objects = stim_clasp.o stim_clbind.o translators.o enums.o
 all: libstimclasp.so
 
 $(objects): %.o: %.cc stim_clasp.h
-	clang++ -static -c -I../../../src -fPIC ${CFLAGS} $<
+	$(CLANG) -static -c -I../../../src -fPIC $(CFLAGS) $<
 
 libstimclasp.so: ${objects}
-	clang++ ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so $^ ${LDFLAGS}
+	$(CLANG) ${LIBFLAGS} -L../../../build/out -Wl,--whole-archive -lstim -Wl,--no-whole-archive -o libstimclasp.so $^ ${LDFLAGS}
 
 run: libstimclasp.so
 	rlwrap clasp --eval '(ql:quickload :stim)' --eval '(in-package :stim)'

@@ -110,7 +110,7 @@ s.def("circuit-append-from-stim-program-text",&circuit__append_from_stim_program
 s.def("circuit-clear",&circuit__clear);
 //s.def("circuit-compile-detector-sampler",&circuit__compile_detector_sampler);
 //s.def("circuit-compile-detector-sampler-seed",&circuit__compile_detector_sampler_seed);
-//s.def("circuit__compile_m2d_converter",&circuit__compile_m2d_converter);
+//s.def("circuit-compile-m2d-converter",&circuit__compile_m2d_converter);
 //s.def("circuit-compile-sampler",&circuit__compile_sampler);
 //s.def("circuit-compile-sampler-seed",&circuit__compile_sampler_seed);
 //s.def("circuit-compile-sampler-reference-sample",&circuit__compile_sampler_reference_sample);
@@ -154,7 +154,7 @@ s.def("circuit-get-final-qubit-coordinates",&circuit__get_final_qubit_coordinate
 //s.def("circuit-shortest-error-sat-problem-dimacs",&circuit__shortest_error_sat_problem_dimacs);
 //s.def("circuit-shortest-graphlike-error",&circuit__shortest_graphlike_error);
 //s.def("circuit-to-file",&circuit__to_file);
-//s.def("circuit-to-qasm",&circuit__to_qasm);
+s.def("circuit-to-qasm",&circuit__to_qasm);
 //s.def("circuit-to-tableau",&circuit__to_tableau);
 //s.def("circuit-with-inlined-feedback",&circuit__with_inlined_feedback);
 //s.def("circuit-without-noise",&circuit__without_noise);
@@ -423,8 +423,8 @@ s.def("circuit-get-final-qubit-coordinates",&circuit__get_final_qubit_coordinate
 //s.def("Tableau-Simulator-cx",&TableauSimulator__cx);
 //s.def("Tableau-Simulator-cy",&TableauSimulator__cy);
 //s.def("Tableau-Simulator-cz",&TableauSimulator__cz);
-//s.def("TableauSimulator__depolarize1",&TableauSimulator__depolarize1);
-//s.def("TableauSimulator__depolarize2",&TableauSimulator__depolarize2);
+//s.def("TableauSimulator-depolarize1",&TableauSimulator__depolarize1);
+//s.def("TableauSimulator-depolarize2",&TableauSimulator__depolarize2);
 //s.def("Tableau-Simulator-do",&TableauSimulator__do);
 //s.def("Tableau-Simulator-do-circuit",&TableauSimulator__do_circuit);
 //s.def("Tableau-Simulator-do-pauli-string",&TableauSimulator__do_pauli_string);
@@ -518,27 +518,38 @@ CLBIND_EXPOSE_MACRO(stim::SampleFormat,({{"01",SampleFormat::SAMPLE_FORMAT_01},
 namespace translate
 {
   template <>
-  struct to_object<std::map<uint32_t, std::vector<double>>>
+  struct to_object<std::vector<double>>
   {
-    static core::T_sp convert(std::map<uint32_t, std::vector<double>> arg)
+    static core::T_sp convert(std::vector<double> val)
+    {
+      core::ComplexVector_T_sp vo = core::ComplexVector_T_O::make(val.size(), nil<core::T_O>());
+      int i(0);
+      for (auto ai : val) {
+        vo->rowMajorAset(i++, core::DoubleFloat_O::create(ai));
+      }
+      return vo;
+    }
+  };
+};
+namespace translate
+{
+  template <typename TX, typename TY>
+  struct to_object<std::map<const TX&, const TY&>>
+  {
+    typedef std::map<const TX&, const TY&> DeclareType;
+    static core::T_sp convert(DeclareType arg)
     {
       core::Cons_sp return_list = nil<core::Cons_O>();
-      // TODO Actually do the translation
       for (auto const& [key, val] : arg)
         {
-          core::ComplexVector_T_sp vo = core::ComplexVector_T_O::make(val.size(), nil<core::T_O>());
-          int i(0);
-          for (auto ai : val) {
-            vo->rowMajorAset(i++, core::DoubleFloat_O::create(ai));
-          }
-          core::Cons_sp cons = core::Cons_O::create(core::Integer_O::create(key),vo);
+          core::Cons_sp cons = core::Cons_O::create(to_object<const TX&>::convert(key),
+                                                    to_object<const TY&>::convert(val));
           return_list = core::Cons_O::create(cons, return_list);
         }
       return return_list;
     }
   };
 };
-
 namespace translate
 {
   template <>
@@ -553,3 +564,4 @@ namespace translate
     }
   };
 };
+

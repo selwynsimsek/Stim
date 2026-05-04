@@ -300,7 +300,12 @@ namespace clasp_stim {
 // std::string circuit__shortest_error_sat_problem_dimacs(Circuit self){}
 // std::vector<ExplainedError> circuit__shortest_graphlike_error(Circuit self, bool a, bool b){}
 // void circuit__to_file(Circuit self, std::string file){}
-// std::string circuit__to_qasm(Circuit self, uint32_t open_qasm_version, bool skip_dets_and_obs){}
+
+  std::string circuit__to_qasm(Circuit self, uint32_t open_qasm_version, bool skip_dets_and_obs){
+    std::stringstream out;
+    stim::export_open_qasm(self, out, open_qasm_version, skip_dets_and_obs);
+    return out.str();
+  }
 // Tableau<MAX_BITWORD_WIDTH> circuit__to_tableau(Circuit self, bool ignore_noise, bool ignore_measurement,bool ignore_reset){}
 // Circuit circuit__with_inlined_feedback(Circuit self){}
 // Circuit circuit__without_noise(Circuit self){}
