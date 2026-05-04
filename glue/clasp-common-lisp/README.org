@@ -5,6 +5,18 @@ Clasp Common Lisp bindings to Stim.
   cd src/ && make run
 #+END_SRC
 to build and start a REPL with Stim as the current package.
+
+Example usage:
+#+BEGIN_SRC lisp
+STIM> (circuit-to-qasm (circuit-init "H 0") 2 t)
+"OPENQASM 2.0;
+include \"qelib1.inc\";
+
+qreg q[1];
+
+h q[0];
+"
+#+END_SRC
 ** Requirements
 clasp must already be installed on the system.
 
