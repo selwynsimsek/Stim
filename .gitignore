@@ -46,3 +46,4 @@ build
 .pytest_cache
 node_modules
 MODULE.bazel.lock
+.ninja_lock

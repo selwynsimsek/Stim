@@ -1,4 +1,4 @@
-__version__ = '1.15.dev0'
+__version__ = '1.16.dev0'
 
 from sinter._collection import (
     collect,
@@ -37,6 +37,7 @@ from sinter._plotting import (
     better_sorted_str_terms,
     plot_discard_rate,
     plot_error_rate,
+    plot_custom,
     group_by,
 )
 from sinter._predict import (

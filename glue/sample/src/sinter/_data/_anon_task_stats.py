@@ -1,9 +1,6 @@
 import collections
 import dataclasses
-from typing import Counter, Union, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from sinter._data._task_stats import TaskStats
+from typing import Counter
 
 
 @dataclasses.dataclass(frozen=True)
@@ -34,16 +31,10 @@ class AnonTaskStats:
     custom_counts: Counter[str] = dataclasses.field(default_factory=collections.Counter)
 
     def __post_init__(self):
-        assert isinstance(self.errors, int)
-        assert isinstance(self.shots, int)
-        assert isinstance(self.discards, int)
-        assert isinstance(self.seconds, (int, float))
-        assert isinstance(self.custom_counts, collections.Counter)
         assert self.errors >= 0
         assert self.discards >= 0
         assert self.seconds >= 0
         assert self.shots >= self.errors + self.discards
-        assert all(isinstance(k, str) and isinstance(v, int) for k, v in self.custom_counts.items())
 
     def __repr__(self) -> str:
         terms = []
@@ -79,10 +70,10 @@ class AnonTaskStats:
         """
         if isinstance(other, AnonTaskStats):
             return AnonTaskStats(
-                shots=self.shots + other.shots,
-                errors=self.errors + other.errors,
-                discards=self.discards + other.discards,
-                seconds=self.seconds + other.seconds,
+                shots=int(self.shots + other.shots),
+                errors=int(self.errors + other.errors),
+                discards=int(self.discards + other.discards),
+                seconds=float(self.seconds + other.seconds),
                 custom_counts=self.custom_counts + other.custom_counts,
             )
 

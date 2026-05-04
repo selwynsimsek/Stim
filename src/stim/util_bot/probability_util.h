@@ -26,14 +26,16 @@
 namespace stim {
 
 // Change this number from time to time to ensure people don't rely on seeds across versions.
-constexpr uint64_t INTENTIONAL_VERSION_SEED_INCOMPATIBILITY = 0xDEADBEEF124BULL;
+constexpr uint64_t INTENTIONAL_VERSION_SEED_INCOMPATIBILITY = 0xDEADBEEF124CULL;
 
 /// Yields the indices of hits sampled from a Bernoulli distribution.
 /// Gets more efficient as the hit probability drops.
 struct RareErrorIterator {
     size_t next_candidate;
-    bool is_one = false;
+    float probability;
     std::geometric_distribution<size_t> dist;
+    RareErrorIterator() = delete;
+    RareErrorIterator(const RareErrorIterator &) = delete;
     RareErrorIterator(float probability);
     size_t next(std::mt19937_64 &rng);
 
