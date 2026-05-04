@@ -1,5 +1,5 @@
 * Stim 
-
+Clasp Common Lisp bindings to Stim.
 ** Usage
 
 ** Installation
@@ -8,6 +8,3 @@
 
 + Selwyn Simsek (selwyn.simsek@cantab.net)
 
-** Copyright
-
-Copyright (c) 2025 Selwyn Simsek (selwyn.simsek@cantab.net)

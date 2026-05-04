@@ -15,7 +15,7 @@ else
 	LIBFLAGS=-shared
 endif
 
-objects = stim_clasp.o stim_clbind.o translators.o enums.o
+objects = stim_clasp.o stim_clbind.o
 
 all: libstimclasp.so
 
